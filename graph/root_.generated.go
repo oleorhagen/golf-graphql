@@ -12,6 +12,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/oleorhagen/golf-graphql/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -34,6 +35,8 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Mutation() MutationResolver
+	Query() QueryResolver
 }
 
 type DirectiveRoot struct {
@@ -49,12 +52,17 @@ type ComplexityRoot struct {
 		Nr func(childComplexity int) int
 	}
 
+	Mutation struct {
+		CreatePlayer func(childComplexity int, input model.NewPlayer) int
+	}
+
 	Player struct {
 		Name       func(childComplexity int) int
 		Scorecards func(childComplexity int) int
 	}
 
 	Query struct {
+		Players func(childComplexity int) int
 	}
 
 	Scorecard struct {
@@ -108,6 +116,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Hole.Nr(childComplexity), true
 
+	case "Mutation.createPlayer":
+		if e.complexity.Mutation.CreatePlayer == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createPlayer_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePlayer(childComplexity, args["input"].(model.NewPlayer)), true
+
 	case "Player.name":
 		if e.complexity.Player.Name == nil {
 			break
@@ -121,6 +141,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Player.Scorecards(childComplexity), true
+
+	case "Query.players":
+		if e.complexity.Query.Players == nil {
+			break
+		}
+
+		return e.complexity.Query.Players(childComplexity), true
 
 	case "Scorecard.id":
 		if e.complexity.Scorecard.ID == nil {
@@ -157,7 +184,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
-	inputUnmarshalMap := graphql.BuildUnmarshalerMap()
+	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputNewPlayer,
+	)
 	first := true
 
 	switch opCtx.Operation.Operation {
@@ -190,6 +219,21 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			}
 
 			return &response
+		}
+	case ast.Mutation:
+		return func(ctx context.Context) *graphql.Response {
+			if !first {
+				return nil
+			}
+			first = false
+			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
+			data := ec._Mutation(ctx, opCtx.Operation.SelectionSet)
+			var buf bytes.Buffer
+			data.MarshalGQL(&buf)
+
+			return &graphql.Response{
+				Data: buf.Bytes(),
+			}
 		}
 
 	default:
