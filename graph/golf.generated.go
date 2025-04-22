@@ -389,14 +389,11 @@ func (ec *executionContext) _Query_players(ctx context.Context, field graphql.Co
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.([]*model.Player)
 	fc.Result = res
-	return ec.marshalNPlayer2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐPlayerᚄ(ctx, field.Selections, res)
+	return ec.marshalOPlayer2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐPlayer(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_players(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -968,16 +965,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "players":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_players(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -1129,50 +1123,6 @@ func (ec *executionContext) marshalNPlayer2githubᚗcomᚋoleorhagenᚋgolfᚑgr
 	return ec._Player(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPlayer2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐPlayerᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Player) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNPlayer2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐPlayer(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) marshalNPlayer2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐPlayer(ctx context.Context, sel ast.SelectionSet, v *model.Player) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -1228,6 +1178,54 @@ func (ec *executionContext) marshalOHole2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolf�
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOPlayer2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐPlayer(ctx context.Context, sel ast.SelectionSet, v []*model.Player) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOPlayer2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐPlayer(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOPlayer2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐPlayer(ctx context.Context, sel ast.SelectionSet, v *model.Player) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Player(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOScorecard2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecard(ctx context.Context, sel ast.SelectionSet, v []*model.Scorecard) graphql.Marshaler {
