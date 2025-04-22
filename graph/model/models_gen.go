@@ -11,14 +11,6 @@ type Hole struct {
 	Nr int32 `json:"nr"`
 }
 
-type Mutation struct {
-}
-
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
-}
-
 type Player struct {
 	Name       string       `json:"name"`
 	Scorecards []*Scorecard `json:"scorecards,omitempty"`
@@ -32,19 +24,7 @@ type Scorecard struct {
 	Player *Player `json:"player"`
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
-}
-
 type Tournament struct {
 	Name   string  `json:"name"`
 	Player *Player `json:"player"`
-}
-
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
 }
