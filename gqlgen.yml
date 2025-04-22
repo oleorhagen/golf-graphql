@@ -153,3 +153,8 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
+
+  Todo:
+    fields:
+      user:
+        resolver: true
