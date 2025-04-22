@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"fmt"
-
 	"math/rand"
 
 	"github.com/oleorhagen/golf-graphql/graph/model"
