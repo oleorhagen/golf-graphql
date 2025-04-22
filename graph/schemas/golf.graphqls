@@ -24,3 +24,15 @@ type Tournament {
   name: String!
   player: Player!
 }
+
+type Query {
+  players: [Player!]!
+}
+
+input NewPlayer {
+  name: String!
+}
+
+type Mutation {
+  createPlayer(input: NewPlayer!): Player!
+}
