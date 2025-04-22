@@ -37,6 +37,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Todo() TodoResolver
 }
 
 type DirectiveRoot struct {
@@ -336,7 +337,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "golf.graphqls" "todo.graphqls"
+//go:embed "schemas/golf.graphqls" "schemas/todo.graphqls"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -348,7 +349,7 @@ func sourceData(filename string) string {
 }
 
 var sources = []*ast.Source{
-	{Name: "golf.graphqls", Input: sourceData("golf.graphqls"), BuiltIn: false},
-	{Name: "todo.graphqls", Input: sourceData("todo.graphqls"), BuiltIn: false},
+	{Name: "schemas/golf.graphqls", Input: sourceData("schemas/golf.graphqls"), BuiltIn: false},
+	{Name: "schemas/todo.graphqls", Input: sourceData("schemas/todo.graphqls"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
