@@ -1,0 +1,26 @@
+
+
+
+type Player {
+  name: String!
+  scorecards: [Scorecard]
+}
+
+type Scorecard {
+  id: ID!
+  player: Player!
+}
+
+type Course {
+  name: String!
+  holes: [Hole!]
+}
+
+type Hole {
+  nr: Int!
+}
+
+type Tournament {
+  name: String!
+  player: Player!
+}
