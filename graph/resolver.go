@@ -1,8 +1,8 @@
 package graph
 
-import "github.com/oleorhagen/golf-graphql/graph/model"
-
 //go:generate go run github.com/99designs/gqlgen generate
+
+import "github.com/oleorhagen/golf-graphql/graph/model"
 
 // This file will not be regenerated automatically.
 //

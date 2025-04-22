@@ -11,6 +11,13 @@ type Hole struct {
 	Nr int32 `json:"nr"`
 }
 
+type Mutation struct {
+}
+
+type NewPlayer struct {
+	Name string `json:"name"`
+}
+
 type Player struct {
 	Name       string       `json:"name"`
 	Scorecards []*Scorecard `json:"scorecards,omitempty"`
