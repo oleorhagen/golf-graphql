@@ -20,13 +20,17 @@ type Hole {
   nr: Int!
 }
 
+scalar Time
+
 type Tournament {
+  id: ID!
   name: String!
-  player: Player!
+  year: Time!
 }
 
 type Query {
   players: [Player]
+  tournaments: [Tournament]
 }
 
 input NewPlayer {

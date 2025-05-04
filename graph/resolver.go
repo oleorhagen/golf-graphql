@@ -13,7 +13,8 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	players []*model.Player
+	players     []*model.Player
+	tournaments []*model.Tournament
 	// todos []*model.Todo
 	// users []*model.User
 	DB *pgx.Conn

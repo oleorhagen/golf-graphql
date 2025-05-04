@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	pgx "github.com/jackc/pgx/v5"
 	"github.com/oleorhagen/golf-graphql/graph/model"
 )
 
@@ -37,9 +37,26 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
 	}
 
+	r.players = names
+	return r.players, nil
+}
+
+// Tournaments is the resolver for the tournaments field.
+func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
+	var names []*model.Player
+	var n string
+	rows, err := r.DB.Query(context.Background(), "select name from player")
+	_, err = pgx.ForEachRow(rows, []any{&n}, func() error {
+		names = append(names, &model.Player{Name: n})
+		return nil
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
+	}
+
 	r.players = append(r.players, names...)
 	return r.players, nil
-
 }
 
 // Mutation returns MutationResolver implementation.
