@@ -37,6 +37,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Scorecard() ScorecardResolver
 }
 
 type DirectiveRoot struct {
