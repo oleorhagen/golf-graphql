@@ -16,7 +16,5 @@ type Resolver struct {
 	players     []*model.Player
 	tournaments []*model.Tournament
 	scorecards  []*model.Scorecard
-	// todos []*model.Todo
-	// users []*model.User
-	DB *pgx.Conn
+	DB          *pgx.Conn
 }
