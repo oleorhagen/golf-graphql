@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/jackc/pgx/v5"
 	"github.com/oleorhagen/golf-graphql/graph"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -17,12 +20,34 @@ import (
 const defaultPort = "8080"
 
 func main() {
+
+	if os.Getenv("DATABASE_URL") == "" {
+		fmt.Fprintf(os.Stderr, "No 'DATABASE_URL' environment variable set")
+		os.Exit(1)
+	}
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+
+	var greeting string
+	err = conn.QueryRow(context.Background(), "select 'Hello, world!'").Scan(&greeting)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println(greeting)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
 	}
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: conn}}))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
