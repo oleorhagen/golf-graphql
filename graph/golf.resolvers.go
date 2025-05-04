@@ -96,11 +96,33 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 	return r.scorecards, nil
 }
 
+// Player is the resolver for the player field.
+func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error) {
+	var names []*model.Player
+	var n string
+	rows, err := r.DB.Query(ctx, "select name from player")
+	_, err = pgx.ForEachRow(rows, []any{&n}, func() error {
+		names = append(names, &model.Player{Name: n})
+		return nil
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
+	}
+
+	r.players = names
+	return r.players, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// Scorecard returns ScorecardResolver implementation.
+func (r *Resolver) Scorecard() ScorecardResolver { return &scorecardResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type scorecardResolver struct{ *Resolver }
