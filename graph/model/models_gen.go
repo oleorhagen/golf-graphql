@@ -2,6 +2,10 @@
 
 package model
 
+import (
+	"time"
+)
+
 type Course struct {
 	Name  string  `json:"name"`
 	Holes []*Hole `json:"holes,omitempty"`
@@ -32,6 +36,7 @@ type Scorecard struct {
 }
 
 type Tournament struct {
-	Name   string  `json:"name"`
-	Player *Player `json:"player"`
+	ID   string    `json:"id"`
+	Name string    `json:"name"`
+	Year time.Time `json:"year"`
 }

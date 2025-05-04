@@ -62,7 +62,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Players func(childComplexity int) int
+		Players     func(childComplexity int) int
+		Tournaments func(childComplexity int) int
 	}
 
 	Scorecard struct {
@@ -71,8 +72,9 @@ type ComplexityRoot struct {
 	}
 
 	Tournament struct {
-		Name   func(childComplexity int) int
-		Player func(childComplexity int) int
+		ID   func(childComplexity int) int
+		Name func(childComplexity int) int
+		Year func(childComplexity int) int
 	}
 }
 
@@ -149,6 +151,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.Players(childComplexity), true
 
+	case "Query.tournaments":
+		if e.complexity.Query.Tournaments == nil {
+			break
+		}
+
+		return e.complexity.Query.Tournaments(childComplexity), true
+
 	case "Scorecard.id":
 		if e.complexity.Scorecard.ID == nil {
 			break
@@ -163,6 +172,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Scorecard.Player(childComplexity), true
 
+	case "Tournament.id":
+		if e.complexity.Tournament.ID == nil {
+			break
+		}
+
+		return e.complexity.Tournament.ID(childComplexity), true
+
 	case "Tournament.name":
 		if e.complexity.Tournament.Name == nil {
 			break
@@ -170,12 +186,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Tournament.Name(childComplexity), true
 
-	case "Tournament.player":
-		if e.complexity.Tournament.Player == nil {
+	case "Tournament.year":
+		if e.complexity.Tournament.Year == nil {
 			break
 		}
 
-		return e.complexity.Tournament.Player(childComplexity), true
+		return e.complexity.Tournament.Year(childComplexity), true
 
 	}
 	return 0, false
