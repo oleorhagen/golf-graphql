@@ -74,10 +74,10 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 	var course_name string
 	// var player model.Player // TODO - Required for the Graph
 	rows, err := r.DB.Query(ctx,
-		"select id, tournament_id, scorer_id, handicap, course_name from scorecard"
+		"select id, tournament_id, scorer_id, handicap, course_name from scorecard",
 	)
 	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name}, func() error {
-		fmt.Fprintf(os.Stderr, "Got: %v", id)
+		fmt.Fprintf(os.Stderr, "Got: %v\n", id)
 		scorecards = append(scorecards, &model.Scorecard{
 			ID:           id,
 			TournamentID: tournamentID,
