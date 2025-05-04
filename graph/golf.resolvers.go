@@ -64,6 +64,38 @@ func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, e
 	return r.tournaments, nil
 }
 
+// Scorecards is the resolver for the scorecards field.
+func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, error) {
+	var scorecards []*model.Scorecard
+	var id uuid.UUID
+	var tournamentID uuid.UUID
+	var playerID uuid.UUID
+	var handicap int32
+	var course_name string
+	// var player model.Player // TODO - Required for the Graph
+	rows, err := r.DB.Query(ctx,
+		"select id, tournament_id, scorer_id, handicap, course_name from scorecard"
+	)
+	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name}, func() error {
+		fmt.Fprintf(os.Stderr, "Got: %v", id)
+		scorecards = append(scorecards, &model.Scorecard{
+			ID:           id,
+			TournamentID: tournamentID,
+			Handicap:     handicap,
+			CourseName:   course_name,
+			// Player - TODO
+		})
+		return nil
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for scorecards: %w", err)
+	}
+
+	r.scorecards = append(r.scorecards, scorecards...)
+	return r.scorecards, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
