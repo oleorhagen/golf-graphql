@@ -8,7 +8,9 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
+	"github.com/google/uuid"
 	pgx "github.com/jackc/pgx/v5"
 	"github.com/oleorhagen/golf-graphql/graph/model"
 )
@@ -27,7 +29,7 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 	var names []*model.Player
 	var n string
-	rows, err := r.DB.Query(context.Background(), "select name from player")
+	rows, err := r.DB.Query(ctx, "select name from player")
 	_, err = pgx.ForEachRow(rows, []any{&n}, func() error {
 		names = append(names, &model.Player{Name: n})
 		return nil
@@ -43,20 +45,23 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 
 // Tournaments is the resolver for the tournaments field.
 func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
-	var names []*model.Player
-	var n string
-	rows, err := r.DB.Query(context.Background(), "select name from player")
-	_, err = pgx.ForEachRow(rows, []any{&n}, func() error {
-		names = append(names, &model.Player{Name: n})
+	var names []*model.Tournament
+	var id uuid.UUID
+	var name string
+	var year time.Time
+	rows, err := r.DB.Query(ctx, "select id, name, year from tournament")
+	_, err = pgx.ForEachRow(rows, []any{&id, &name, &year}, func() error {
+		fmt.Fprintf(os.Stderr, "Got: %v", id)
+		names = append(names, &model.Tournament{ID: id, Name: name, Year: year})
 		return nil
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
+		return nil, fmt.Errorf("Failed to query the database for tournaments: %w", err)
 	}
 
-	r.players = append(r.players, names...)
-	return r.players, nil
+	r.tournaments = append(r.tournaments, names...)
+	return r.tournaments, nil
 }
 
 // Mutation returns MutationResolver implementation.

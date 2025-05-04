@@ -13,6 +13,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/google/uuid"
 	"github.com/oleorhagen/golf-graphql/graph/model"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -623,9 +624,9 @@ func (ec *executionContext) _Scorecard_id(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(uuid.UUID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Scorecard_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -717,9 +718,9 @@ func (ec *executionContext) _Tournament_id(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(uuid.UUID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Tournament_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {

@@ -4,6 +4,8 @@ package model
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Course struct {
@@ -31,12 +33,12 @@ type Query struct {
 }
 
 type Scorecard struct {
-	ID     string  `json:"id"`
-	Player *Player `json:"player"`
+	ID     uuid.UUID `json:"id"`
+	Player *Player   `json:"player"`
 }
 
 type Tournament struct {
-	ID   string    `json:"id"`
+	ID   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
 	Year time.Time `json:"year"`
 }
