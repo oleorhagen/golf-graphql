@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/oleorhagen/golf-graphql/graph/model"
 )
 
@@ -24,13 +25,19 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 
 // Players is the resolver for the players field.
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
-	var names string
-	err := r.DB.QueryRow(context.Background(), "select name from player limit 1").Scan(&names)
+	var names []*model.Player
+	var n string
+	rows, err := r.DB.Query(context.Background(), "select name from player")
+	_, err = pgx.ForEachRow(rows, []any{&n}, func() error {
+		names = append(names, &model.Player{Name: n})
+		return nil
+	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
 	}
-	r.players = append(r.players, &model.Player{Name: names})
+
+	r.players = append(r.players, names...)
 	return r.players, nil
 
 }
