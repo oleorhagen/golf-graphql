@@ -6,6 +6,8 @@ package graph
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"github.com/oleorhagen/golf-graphql/graph/model"
 )
@@ -15,13 +17,22 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 	player := &model.Player{
 		Name: input.Name,
 	}
+
 	r.players = append(r.players, player)
 	return player, nil
 }
 
 // Players is the resolver for the players field.
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
+	var names string
+	err := r.DB.QueryRow(context.Background(), "select name from player limit 1").Scan(&names)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
+	}
+	r.players = append(r.players, &model.Player{Name: names})
 	return r.players, nil
+
 }
 
 // Mutation returns MutationResolver implementation.
