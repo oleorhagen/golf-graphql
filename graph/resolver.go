@@ -3,9 +3,8 @@ package graph
 //go:generate go run github.com/99designs/gqlgen generate
 
 import (
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/oleorhagen/golf-graphql/graph/model"
-
-	"github.com/jackc/pgx/v5"
 )
 
 // This file will not be regenerated automatically.
@@ -16,5 +15,5 @@ type Resolver struct {
 	players     []*model.Player
 	tournaments []*model.Tournament
 	scorecards  []*model.Scorecard
-	DB          *pgx.Conn
+	DB          *pgxpool.Pool
 }
