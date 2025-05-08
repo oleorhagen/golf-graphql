@@ -32,14 +32,6 @@ type Player struct {
 type Query struct {
 }
 
-type Scorecard struct {
-	ID           uuid.UUID `json:"id"`
-	TournamentID uuid.UUID `json:"tournament_id"`
-	Handicap     int32     `json:"handicap"`
-	CourseName   string    `json:"course_name"`
-	Player       *Player   `json:"player"`
-}
-
 type Tournament struct {
 	ID   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
