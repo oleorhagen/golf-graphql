@@ -170,3 +170,10 @@ models:
       scorecards:
         resolver: true
 
+
+  Course:
+    fields:
+      holes:
+        resolver: true
+
+

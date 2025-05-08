@@ -16,6 +16,32 @@ import (
 	"github.com/oleorhagen/golf-graphql/graph/model"
 )
 
+// Holes is the resolver for the holes field.
+func (r *courseResolver) Holes(ctx context.Context, obj *model.Course) ([]*model.Hole, error) {
+	var hole_nr int32
+	var index int32
+	var par int32
+	rows, err := r.DB.Query(ctx, "select hole_nr, hole_index, par from course_hole where course_name=$1", obj.Name)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to query the database for players (%s): %w", obj.Name, err)
+	}
+	var holes []*model.Hole
+	_, err = pgx.ForEachRow(rows, []any{&hole_nr, &index, &par}, func() error {
+		holes = append(holes, &model.Hole{
+			Nr:    hole_nr,
+			Index: index,
+			Par:   par,
+		})
+		return nil
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for holes: %w", err)
+	}
+
+	return holes, nil
+}
+
 // CreatePlayer is the resolver for the createPlayer field.
 func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlayer) (*model.Player, error) {
 	player := &model.Player{
@@ -54,6 +80,11 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 	}
 
 	return players, nil
+}
+
+// Teams is the resolver for the teams field.
+func (r *queryResolver) Teams(ctx context.Context) ([]*model.Team, error) {
+	panic(fmt.Errorf("not implemented: Teams - teams"))
 }
 
 // Scorecards is the resolver for the scorecards field.
@@ -145,6 +176,9 @@ func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*
 	return &player, nil
 }
 
+// Course returns graph.CourseResolver implementation.
+func (r *Resolver) Course() graph.CourseResolver { return &courseResolver{r} }
+
 // Mutation returns graph.MutationResolver implementation.
 func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{r} }
 
@@ -157,6 +191,7 @@ func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 // Scorecard returns graph.ScorecardResolver implementation.
 func (r *Resolver) Scorecard() graph.ScorecardResolver { return &scorecardResolver{r} }
 
+type courseResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type playerResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
