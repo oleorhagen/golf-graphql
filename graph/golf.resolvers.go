@@ -29,7 +29,7 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 	var names []*model.Player
 	var n string
-	rows, err := r.DB.Query(ctx, "select name from player")
+	rows, err := r.DB.Query(ctx, "select name from scorer")
 	_, err = pgx.ForEachRow(rows, []any{&n}, func() error {
 		names = append(names, &model.Player{Name: n})
 		return nil
@@ -83,7 +83,7 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 			TournamentID: tournamentID,
 			Handicap:     handicap,
 			CourseName:   course_name,
-			// Player - TODO
+			PlayerID:     playerID,
 		})
 		return nil
 	})
@@ -97,21 +97,17 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 }
 
 // Player is the resolver for the player field.
-func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error) {
-	var names []*model.Player
-	var n string
-	rows, err := r.DB.Query(ctx, "select name from player")
-	_, err = pgx.ForEachRow(rows, []any{&n}, func() error {
-		names = append(names, &model.Player{Name: n})
-		return nil
-	})
+func (r *scorecardResolver) Player(ctx context.Context, scorecard *model.Scorecard) (*model.Player, error) {
+	var player model.Player
+	var name string
+	err := r.DB.QueryRow(ctx, "select name from scorer where id=$1", scorecard.PlayerID).Scan(&name)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
+		fmt.Fprintf(os.Stderr, "QueryRow failed (%s): %v\n", scorecard.PlayerID, err)
+		return nil, fmt.Errorf("Failed to query the database for players (%s): %w", scorecard.PlayerID, err)
 	}
+	player.Name = name
 
-	r.players = names
-	return r.players, nil
+	return &player, nil
 }
 
 // Mutation returns MutationResolver implementation.

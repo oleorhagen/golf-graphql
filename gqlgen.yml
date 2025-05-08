@@ -5,7 +5,7 @@ schema:
 # Where should the generated server code go?
 exec:
   package: graph
-  layout: follow-schema # Only other option is "follow-schema," ie multi-file. (single-file
+  layout: follow-schema # Only other option is "follow-schema," ie multi-file. (single-file)
 
   # Only for single-file layout:
   filename: graph/generated.go
@@ -42,7 +42,7 @@ resolver:
   # filename: graph/resolver.go
 
   # Only for follow-schema layout:
-  dir: graph
+  dir: graph/resolvers
   filename_template: "{name}.resolvers.go"
 
   # Optional: turn on to not generate template comments above resolvers
@@ -159,6 +159,7 @@ models:
       - github.com/99designs/gqlgen/graphql.Time
 
   Scorecard:
+    model: github.com/oleorhagen/golf-graphql/graph/model.Scorecard
     fields:
       player:
         resolver: true
