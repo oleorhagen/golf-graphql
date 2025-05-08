@@ -35,6 +35,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Course() CourseResolver
 	Mutation() MutationResolver
 	Player() PlayerResolver
 	Query() QueryResolver
@@ -54,7 +55,9 @@ type ComplexityRoot struct {
 	}
 
 	Hole struct {
-		Nr func(childComplexity int) int
+		Index func(childComplexity int) int
+		Nr    func(childComplexity int) int
+		Par   func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -72,6 +75,7 @@ type ComplexityRoot struct {
 		Courses     func(childComplexity int) int
 		Players     func(childComplexity int) int
 		Scorecards  func(childComplexity int) int
+		Teams       func(childComplexity int) int
 		Tournaments func(childComplexity int) int
 	}
 
@@ -152,12 +156,26 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Course.Slope(childComplexity), true
 
+	case "Hole.index":
+		if e.complexity.Hole.Index == nil {
+			break
+		}
+
+		return e.complexity.Hole.Index(childComplexity), true
+
 	case "Hole.nr":
 		if e.complexity.Hole.Nr == nil {
 			break
 		}
 
 		return e.complexity.Hole.Nr(childComplexity), true
+
+	case "Hole.par":
+		if e.complexity.Hole.Par == nil {
+			break
+		}
+
+		return e.complexity.Hole.Par(childComplexity), true
 
 	case "Mutation.createPlayer":
 		if e.complexity.Mutation.CreatePlayer == nil {
@@ -219,6 +237,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.Scorecards(childComplexity), true
+
+	case "Query.teams":
+		if e.complexity.Query.Teams == nil {
+			break
+		}
+
+		return e.complexity.Query.Teams(childComplexity), true
 
 	case "Query.tournaments":
 		if e.complexity.Query.Tournaments == nil {

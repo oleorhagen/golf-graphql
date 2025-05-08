@@ -34,6 +34,8 @@ type Course {
 
 type Hole {
   nr: Int!
+  index: Int!
+  par: Int!
 }
 
 scalar Time
@@ -46,6 +48,7 @@ type Tournament {
 
 type Query {
   players: [Player]
+  teams: [Team]
   scorecards: [Scorecard]
   courses: [Course]
   tournaments: [Tournament]

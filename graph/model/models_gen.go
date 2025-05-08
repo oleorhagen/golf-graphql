@@ -17,7 +17,9 @@ type Course struct {
 }
 
 type Hole struct {
-	Nr int32 `json:"nr"`
+	Nr    int32 `json:"nr"`
+	Index int32 `json:"index"`
+	Par   int32 `json:"par"`
 }
 
 type Mutation struct {
