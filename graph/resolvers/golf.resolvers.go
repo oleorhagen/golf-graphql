@@ -88,7 +88,22 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 
 // Courses is the resolver for the courses field.
 func (r *queryResolver) Courses(ctx context.Context) ([]*model.Course, error) {
-	panic(fmt.Errorf("not implemented: Courses - courses"))
+	var courses []*model.Course
+	var name string
+	var slope int32
+	var course_rating float64
+	var nr_holes int32
+	rows, err := r.DB.Query(ctx, "select name, slope, course_rating, nr_holes from course")
+	_, err = pgx.ForEachRow(rows, []any{&name, &slope, &course_rating, &nr_holes}, func() error {
+		courses = append(courses, &model.Course{Name: name, Slope: slope, CourseRating: course_rating, NrHoles: nr_holes})
+		return nil
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for courses: %w", err)
+	}
+
+	return courses, nil
 }
 
 // Tournaments is the resolver for the tournaments field.

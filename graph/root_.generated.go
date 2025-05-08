@@ -46,8 +46,11 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Course struct {
-		Holes func(childComplexity int) int
-		Name  func(childComplexity int) int
+		CourseRating func(childComplexity int) int
+		Holes        func(childComplexity int) int
+		Name         func(childComplexity int) int
+		NrHoles      func(childComplexity int) int
+		Slope        func(childComplexity int) int
 	}
 
 	Hole struct {
@@ -80,6 +83,14 @@ type ComplexityRoot struct {
 		TournamentID func(childComplexity int) int
 	}
 
+	Team struct {
+		Handicap   func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Name       func(childComplexity int) int
+		Players    func(childComplexity int) int
+		Scorecards func(childComplexity int) int
+	}
+
 	Tournament struct {
 		ID   func(childComplexity int) int
 		Name func(childComplexity int) int
@@ -106,6 +117,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Course.course_rating":
+		if e.complexity.Course.CourseRating == nil {
+			break
+		}
+
+		return e.complexity.Course.CourseRating(childComplexity), true
+
 	case "Course.holes":
 		if e.complexity.Course.Holes == nil {
 			break
@@ -119,6 +137,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Course.Name(childComplexity), true
+
+	case "Course.nr_holes":
+		if e.complexity.Course.NrHoles == nil {
+			break
+		}
+
+		return e.complexity.Course.NrHoles(childComplexity), true
+
+	case "Course.slope":
+		if e.complexity.Course.Slope == nil {
+			break
+		}
+
+		return e.complexity.Course.Slope(childComplexity), true
 
 	case "Hole.nr":
 		if e.complexity.Hole.Nr == nil {
@@ -229,6 +261,41 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Scorecard.TournamentID(childComplexity), true
+
+	case "Team.handicap":
+		if e.complexity.Team.Handicap == nil {
+			break
+		}
+
+		return e.complexity.Team.Handicap(childComplexity), true
+
+	case "Team.id":
+		if e.complexity.Team.ID == nil {
+			break
+		}
+
+		return e.complexity.Team.ID(childComplexity), true
+
+	case "Team.name":
+		if e.complexity.Team.Name == nil {
+			break
+		}
+
+		return e.complexity.Team.Name(childComplexity), true
+
+	case "Team.players":
+		if e.complexity.Team.Players == nil {
+			break
+		}
+
+		return e.complexity.Team.Players(childComplexity), true
+
+	case "Team.scorecards":
+		if e.complexity.Team.Scorecards == nil {
+			break
+		}
+
+		return e.complexity.Team.Scorecards(childComplexity), true
 
 	case "Tournament.id":
 		if e.complexity.Tournament.ID == nil {

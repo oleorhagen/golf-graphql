@@ -9,8 +9,11 @@ import (
 )
 
 type Course struct {
-	Name  string  `json:"name"`
-	Holes []*Hole `json:"holes,omitempty"`
+	Name         string  `json:"name"`
+	Slope        int32   `json:"slope"`
+	CourseRating float64 `json:"course_rating"`
+	NrHoles      int32   `json:"nr_holes"`
+	Holes        []*Hole `json:"holes,omitempty"`
 }
 
 type Hole struct {
@@ -32,6 +35,14 @@ type Player struct {
 }
 
 type Query struct {
+}
+
+type Team struct {
+	ID         uuid.UUID    `json:"id"`
+	Name       string       `json:"name"`
+	Handicap   int32        `json:"handicap"`
+	Scorecards []*Scorecard `json:"scorecards,omitempty"`
+	Players    []*Player    `json:"players,omitempty"`
 }
 
 type Tournament struct {
