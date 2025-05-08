@@ -164,3 +164,9 @@ models:
       player:
         resolver: true
 
+  Player:
+    # model: github.com/oleorhagen/golf-graphql/graph/model.Scorecard
+    fields:
+      scorecards:
+        resolver: true
+

@@ -25,7 +25,9 @@ type NewPlayer struct {
 }
 
 type Player struct {
+	ID         uuid.UUID    `json:"id"`
 	Name       string       `json:"name"`
+	Handicap   int32        `json:"handicap"`
 	Scorecards []*Scorecard `json:"scorecards,omitempty"`
 }
 

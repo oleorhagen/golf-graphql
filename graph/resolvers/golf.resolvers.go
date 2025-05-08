@@ -26,13 +26,26 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 	return player, nil
 }
 
+// Scorecards is the resolver for the scorecards field.
+func (r *playerResolver) Scorecards(ctx context.Context, obj *model.Player) ([]*model.Scorecard, error) {
+	scorecards, err := getScorecards(r, ctx, obj.ID)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
+	}
+
+	return scorecards, nil
+}
+
 // Players is the resolver for the players field.
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 	var names []*model.Player
+	var id uuid.UUID
 	var n string
-	rows, err := r.DB.Query(ctx, "select name from scorer")
-	_, err = pgx.ForEachRow(rows, []any{&n}, func() error {
-		names = append(names, &model.Player{Name: n})
+	var handicap int32
+	rows, err := r.DB.Query(ctx, "select id, name, handicap from scorer")
+	_, err = pgx.ForEachRow(rows, []any{&id, &n, &handicap}, func() error {
+		names = append(names, &model.Player{ID: id, Name: n, Handicap: handicap})
 		return nil
 	})
 	if err != nil {
@@ -44,20 +57,6 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 	return r.players, nil
 }
 
-// Player is the resolver for the player field.
-func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error) {
-	var player model.Player
-	var name string
-	err := r.DB.QueryRow(ctx, "select name from scorer where id=$1", obj.PlayerID).Scan(&name)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed (%s): %v\n", obj.PlayerID, err)
-		return nil, fmt.Errorf("Failed to query the database for players (%s): %w", obj.PlayerID, err)
-	}
-	player.Name = name
-
-	return &player, nil
-}
-
 // Scorecards is the resolver for the scorecards field.
 func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, error) {
 	var scorecards []*model.Scorecard
@@ -66,7 +65,6 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 	var playerID uuid.UUID
 	var handicap int32
 	var course_name string
-	// var player model.Player // TODO - Required for the Graph
 	rows, err := r.DB.Query(ctx,
 		"select id, tournament_id, scorer_id, handicap, course_name from scorecard",
 	)
@@ -90,6 +88,11 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 	return r.scorecards, nil
 }
 
+// Courses is the resolver for the courses field.
+func (r *queryResolver) Courses(ctx context.Context) ([]*model.Course, error) {
+	panic(fmt.Errorf("not implemented: Courses - courses"))
+}
+
 // Tournaments is the resolver for the tournaments field.
 func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
 	var names []*model.Tournament
@@ -111,8 +114,30 @@ func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, e
 	return r.tournaments, nil
 }
 
+// Player is the resolver for the player field.
+func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error) {
+	var id uuid.UUID
+	var name string
+	var handicap int32
+	err := r.DB.QueryRow(ctx, "select id, name, handicap from scorer where id=$1", obj.PlayerID).Scan(&id, &name, &handicap)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed (%s): %v\n", obj.PlayerID, err)
+		return nil, fmt.Errorf("Failed to query the database for players (%s): %w", obj.PlayerID, err)
+	}
+	player := model.Player{
+		ID:       id,
+		Name:     name,
+		Handicap: handicap,
+	}
+
+	return &player, nil
+}
+
 // Mutation returns graph.MutationResolver implementation.
 func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{r} }
+
+// Player returns graph.PlayerResolver implementation.
+func (r *Resolver) Player() graph.PlayerResolver { return &playerResolver{r} }
 
 // Query returns graph.QueryResolver implementation.
 func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
@@ -121,5 +146,6 @@ func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 func (r *Resolver) Scorecard() graph.ScorecardResolver { return &scorecardResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+type playerResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type scorecardResolver struct{ *Resolver }

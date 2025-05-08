@@ -2,7 +2,9 @@
 
 
 type Player {
+  id: ID!
   name: String!
+  handicap: Int!
   scorecards: [Scorecard]
 }
 
@@ -33,8 +35,9 @@ type Tournament {
 
 type Query {
   players: [Player]
-  tournaments: [Tournament]
   scorecards: [Scorecard]
+  courses: [Course]
+  tournaments: [Tournament]
 }
 
 input NewPlayer {
