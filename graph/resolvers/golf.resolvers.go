@@ -84,7 +84,21 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 
 // Teams is the resolver for the teams field.
 func (r *queryResolver) Teams(ctx context.Context) ([]*model.Team, error) {
-	panic(fmt.Errorf("not implemented: Teams - teams"))
+	var teams []*model.Team
+	var id uuid.UUID
+	var n string
+	var handicap int32
+	rows, err := r.DB.Query(ctx, "select id, name, handicap from team")
+	_, err = pgx.ForEachRow(rows, []any{&id, &n, &handicap}, func() error {
+		teams = append(teams, &model.Team{ID: id, Name: n, Handicap: handicap})
+		return nil
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for teams: %w", err)
+	}
+
+	return teams, nil
 }
 
 // Scorecards is the resolver for the scorecards field.
