@@ -13,7 +13,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/oleorhagen/golf-graphql/graph"
+	graph "github.com/oleorhagen/golf-graphql/graph"
+	resolvers "github.com/oleorhagen/golf-graphql/graph/resolvers"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -54,7 +55,7 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: conn}}))
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &resolvers.Resolver{DB: conn}}))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})

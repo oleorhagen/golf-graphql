@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	pgx "github.com/jackc/pgx/v5"
+	"github.com/oleorhagen/golf-graphql/graph"
 	"github.com/oleorhagen/golf-graphql/graph/model"
 )
 
@@ -97,27 +98,27 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 }
 
 // Player is the resolver for the player field.
-func (r *scorecardResolver) Player(ctx context.Context, scorecard *model.Scorecard) (*model.Player, error) {
+func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error) {
 	var player model.Player
 	var name string
-	err := r.DB.QueryRow(ctx, "select name from scorer where id=$1", scorecard.PlayerID).Scan(&name)
+	err := r.DB.QueryRow(ctx, "select name from scorer where id=$1", obj.PlayerID).Scan(&name)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed (%s): %v\n", scorecard.PlayerID, err)
-		return nil, fmt.Errorf("Failed to query the database for players (%s): %w", scorecard.PlayerID, err)
+		fmt.Fprintf(os.Stderr, "QueryRow failed (%s): %v\n", obj.PlayerID, err)
+		return nil, fmt.Errorf("Failed to query the database for players (%s): %w", obj.PlayerID, err)
 	}
 	player.Name = name
 
 	return &player, nil
 }
 
-// Mutation returns MutationResolver implementation.
-func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+// Mutation returns graph.MutationResolver implementation.
+func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{r} }
 
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+// Query returns graph.QueryResolver implementation.
+func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 
-// Scorecard returns ScorecardResolver implementation.
-func (r *Resolver) Scorecard() ScorecardResolver { return &scorecardResolver{r} }
+// Scorecard returns graph.ScorecardResolver implementation.
+func (r *Resolver) Scorecard() graph.ScorecardResolver { return &scorecardResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
