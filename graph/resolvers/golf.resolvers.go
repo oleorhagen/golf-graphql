@@ -44,25 +44,18 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 	return r.players, nil
 }
 
-// Tournaments is the resolver for the tournaments field.
-func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
-	var names []*model.Tournament
-	var id uuid.UUID
+// Player is the resolver for the player field.
+func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error) {
+	var player model.Player
 	var name string
-	var year time.Time
-	rows, err := r.DB.Query(ctx, "select id, name, year from tournament")
-	_, err = pgx.ForEachRow(rows, []any{&id, &name, &year}, func() error {
-		fmt.Fprintf(os.Stderr, "Got: %v", id)
-		names = append(names, &model.Tournament{ID: id, Name: name, Year: year})
-		return nil
-	})
+	err := r.DB.QueryRow(ctx, "select name from scorer where id=$1", obj.PlayerID).Scan(&name)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		return nil, fmt.Errorf("Failed to query the database for tournaments: %w", err)
+		fmt.Fprintf(os.Stderr, "QueryRow failed (%s): %v\n", obj.PlayerID, err)
+		return nil, fmt.Errorf("Failed to query the database for players (%s): %w", obj.PlayerID, err)
 	}
+	player.Name = name
 
-	r.tournaments = append(r.tournaments, names...)
-	return r.tournaments, nil
+	return &player, nil
 }
 
 // Scorecards is the resolver for the scorecards field.
@@ -97,18 +90,25 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 	return r.scorecards, nil
 }
 
-// Player is the resolver for the player field.
-func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error) {
-	var player model.Player
+// Tournaments is the resolver for the tournaments field.
+func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
+	var names []*model.Tournament
+	var id uuid.UUID
 	var name string
-	err := r.DB.QueryRow(ctx, "select name from scorer where id=$1", obj.PlayerID).Scan(&name)
+	var year time.Time
+	rows, err := r.DB.Query(ctx, "select id, name, year from tournament")
+	_, err = pgx.ForEachRow(rows, []any{&id, &name, &year}, func() error {
+		fmt.Fprintf(os.Stderr, "Got: %v", id)
+		names = append(names, &model.Tournament{ID: id, Name: name, Year: year})
+		return nil
+	})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed (%s): %v\n", obj.PlayerID, err)
-		return nil, fmt.Errorf("Failed to query the database for players (%s): %w", obj.PlayerID, err)
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for tournaments: %w", err)
 	}
-	player.Name = name
 
-	return &player, nil
+	r.tournaments = append(r.tournaments, names...)
+	return r.tournaments, nil
 }
 
 // Mutation returns graph.MutationResolver implementation.
