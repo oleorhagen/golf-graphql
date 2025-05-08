@@ -22,7 +22,6 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 		Name: input.Name,
 	}
 
-	r.players = append(r.players, player)
 	return player, nil
 }
 
@@ -31,21 +30,22 @@ func (r *playerResolver) Scorecards(ctx context.Context, obj *model.Player) ([]*
 	scorecards, err := getScorecards(r, ctx, obj.ID)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
+		return nil, fmt.Errorf("Failed to query the database for players scorecards: %w", err)
 	}
 
+	fmt.Fprintf(os.Stderr, "Scorecards player results: %v", scorecards)
 	return scorecards, nil
 }
 
 // Players is the resolver for the players field.
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
-	var names []*model.Player
+	var players []*model.Player
 	var id uuid.UUID
 	var n string
 	var handicap int32
 	rows, err := r.DB.Query(ctx, "select id, name, handicap from scorer")
 	_, err = pgx.ForEachRow(rows, []any{&id, &n, &handicap}, func() error {
-		names = append(names, &model.Player{ID: id, Name: n, Handicap: handicap})
+		players = append(players, &model.Player{ID: id, Name: n, Handicap: handicap})
 		return nil
 	})
 	if err != nil {
@@ -53,8 +53,7 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 		return nil, fmt.Errorf("Failed to query the database for players: %w", err)
 	}
 
-	r.players = names
-	return r.players, nil
+	return players, nil
 }
 
 // Scorecards is the resolver for the scorecards field.
@@ -84,8 +83,7 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 		return nil, fmt.Errorf("Failed to query the database for scorecards: %w", err)
 	}
 
-	r.scorecards = append(r.scorecards, scorecards...)
-	return r.scorecards, nil
+	return scorecards, nil
 }
 
 // Courses is the resolver for the courses field.
@@ -95,14 +93,14 @@ func (r *queryResolver) Courses(ctx context.Context) ([]*model.Course, error) {
 
 // Tournaments is the resolver for the tournaments field.
 func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
-	var names []*model.Tournament
+	var tournaments []*model.Tournament
 	var id uuid.UUID
 	var name string
 	var year time.Time
 	rows, err := r.DB.Query(ctx, "select id, name, year from tournament")
 	_, err = pgx.ForEachRow(rows, []any{&id, &name, &year}, func() error {
 		fmt.Fprintf(os.Stderr, "Got: %v", id)
-		names = append(names, &model.Tournament{ID: id, Name: name, Year: year})
+		tournaments = append(tournaments, &model.Tournament{ID: id, Name: name, Year: year})
 		return nil
 	})
 	if err != nil {
@@ -110,8 +108,7 @@ func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, e
 		return nil, fmt.Errorf("Failed to query the database for tournaments: %w", err)
 	}
 
-	r.tournaments = append(r.tournaments, names...)
-	return r.tournaments, nil
+	return tournaments, nil
 }
 
 // Player is the resolver for the player field.

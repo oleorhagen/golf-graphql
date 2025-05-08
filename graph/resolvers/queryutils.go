@@ -38,6 +38,5 @@ func getScorecards(r *playerResolver, ctx context.Context, scorerID uuid.UUID) (
 		return nil, fmt.Errorf("Failed to query the database for scorecards: %w", err)
 	}
 
-	r.scorecards = append(r.scorecards, scorecards...)
-	return r.scorecards, nil
+	return scorecards, nil
 }
