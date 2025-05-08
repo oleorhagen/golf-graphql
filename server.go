@@ -12,7 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/oleorhagen/golf-graphql/graph"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -26,12 +26,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	conn, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
+
+	// conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+	// 	os.Exit(1)
+	// }
+	// defer conn.Close(context.Background())
 
 	var greeting string
 	err = conn.QueryRow(context.Background(), "select 'Hello, world!'").Scan(&greeting)
