@@ -15,7 +15,6 @@ type Resolver struct {
 	players     []*model.Player
 	scorecards  []*model.Scorecard
 	courses     []*model.Course
-	holes       []*model.Hole
 	tournaments []*model.Tournament
 	DB          *pgxpool.Pool
 }
