@@ -190,6 +190,57 @@ func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*
 	return &player, nil
 }
 
+// Scorecards is the resolver for the scorecards field.
+func (r *teamResolver) Scorecards(ctx context.Context, obj *model.Team) ([]*model.Scorecard, error) {
+	var scorecards []*model.Scorecard
+	var id uuid.UUID
+	var tournamentID uuid.UUID
+	var playerID uuid.UUID
+	var handicap int32
+	var course_name string
+	rows, err := r.DB.Query(ctx,
+		"select id, tournament_id, scorer_id, handicap, course_name from scorecard where scorer_id=$1",
+		obj.ID,
+	)
+	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name}, func() error {
+		fmt.Fprintf(os.Stderr, "Got: %v\n", id)
+		scorecards = append(scorecards, &model.Scorecard{
+			ID:           id,
+			TournamentID: tournamentID,
+			Handicap:     handicap,
+			CourseName:   course_name,
+			PlayerID:     playerID,
+		})
+		return nil
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return nil, fmt.Errorf("Failed to query the database for scorecards: %w", err)
+	}
+
+	return scorecards, nil
+}
+
+// Players is the resolver for the players field.
+func (r *teamResolver) Players(ctx context.Context, obj *model.Team) ([]*model.Player, error) {
+	var players []*model.Player
+	var id uuid.UUID
+	var name string
+	var handicap int32
+	rows, err := r.DB.Query(ctx,
+		"select player_id, player_name, player.handicap from team_member inner join player on player_id = player.id where team_id = $1", obj.ID)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed (%s): %v\n", obj.ID, err)
+		return nil, fmt.Errorf("Failed to query the database for team members (%s): %w", obj.ID, err)
+	}
+	_, err = pgx.ForEachRow(rows, []any{&id, &name, &handicap}, func() error {
+		fmt.Fprintf(os.Stderr, "Got: %v", id)
+		players = append(players, &model.Player{ID: id, Name: name, Handicap: handicap})
+		return nil
+	})
+	return players, nil
+}
+
 // Course returns graph.CourseResolver implementation.
 func (r *Resolver) Course() graph.CourseResolver { return &courseResolver{r} }
 
@@ -205,8 +256,12 @@ func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 // Scorecard returns graph.ScorecardResolver implementation.
 func (r *Resolver) Scorecard() graph.ScorecardResolver { return &scorecardResolver{r} }
 
+// Team returns graph.TeamResolver implementation.
+func (r *Resolver) Team() graph.TeamResolver { return &teamResolver{r} }
+
 type courseResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type playerResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type scorecardResolver struct{ *Resolver }
+type teamResolver struct{ *Resolver }
