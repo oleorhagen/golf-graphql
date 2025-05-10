@@ -170,6 +170,12 @@ models:
       scorecards:
         resolver: true
 
+  Team:
+    fields:
+      scorecards:
+        resolver: true
+      players:
+        resolver: true
 
   Course:
     fields:

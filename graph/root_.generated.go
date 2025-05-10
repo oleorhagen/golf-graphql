@@ -40,6 +40,7 @@ type ResolverRoot interface {
 	Player() PlayerResolver
 	Query() QueryResolver
 	Scorecard() ScorecardResolver
+	Team() TeamResolver
 }
 
 type DirectiveRoot struct {
