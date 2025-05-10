@@ -5,7 +5,7 @@ schema:
 # Where should the generated server code go?
 exec:
   package: graph
-  layout: follow-schema # Only other option is "follow-schema," ie multi-file. (single-file
+  layout: follow-schema # Only other option is "follow-schema," ie multi-file. (single-file)
 
   # Only for single-file layout:
   filename: graph/generated.go
@@ -42,7 +42,7 @@ resolver:
   # filename: graph/resolver.go
 
   # Only for follow-schema layout:
-  dir: graph
+  dir: graph/resolvers
   filename_template: "{name}.resolvers.go"
 
   # Optional: turn on to not generate template comments above resolvers
@@ -117,7 +117,7 @@ call_argument_directives_with_null: true
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-#  - "github.com/oleorhagen/golf-graphql/graph/model"
+  - "github.com/oleorhagen/golf-graphql"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -127,10 +127,10 @@ autobind:
 models:
   ID:
     model:
-      - github.com/99designs/gqlgen/graphql.ID
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/99designs/gqlgen/graphql.Int32
+      - github.com/99designs/gqlgen/graphql.UUID
+      # - github.com/99designs/gqlgen/graphql.Int
+      # - github.com/99designs/gqlgen/graphql.Int32
+      # - github.com/99designs/gqlgen/graphql.Int64
   # gqlgen provides a default GraphQL UUID convenience wrapper for github.com/google/uuid
   # but you can override this to provide your own GraphQL UUID implementation
   UUID:
@@ -154,7 +154,32 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
 
-  Todo:
+  Time:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
+
+  Scorecard:
+    model: github.com/oleorhagen/golf-graphql/graph/model.Scorecard
     fields:
-      user:
+      player:
         resolver: true
+
+  Player:
+    # model: github.com/oleorhagen/golf-graphql/graph/model.Scorecard
+    fields:
+      scorecards:
+        resolver: true
+
+  Team:
+    fields:
+      scorecards:
+        resolver: true
+      players:
+        resolver: true
+
+  Course:
+    fields:
+      holes:
+        resolver: true
+
+

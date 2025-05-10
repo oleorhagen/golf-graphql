@@ -2,13 +2,24 @@
 
 package model
 
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
 type Course struct {
-	Name  string  `json:"name"`
-	Holes []*Hole `json:"holes,omitempty"`
+	Name         string  `json:"name"`
+	Slope        int32   `json:"slope"`
+	CourseRating float64 `json:"course_rating"`
+	NrHoles      int32   `json:"nr_holes"`
+	Holes        []*Hole `json:"holes,omitempty"`
 }
 
 type Hole struct {
-	Nr int32 `json:"nr"`
+	Nr    int32 `json:"nr"`
+	Index int32 `json:"index"`
+	Par   int32 `json:"par"`
 }
 
 type Mutation struct {
@@ -19,19 +30,25 @@ type NewPlayer struct {
 }
 
 type Player struct {
+	ID         uuid.UUID    `json:"id"`
 	Name       string       `json:"name"`
+	Handicap   int32        `json:"handicap"`
 	Scorecards []*Scorecard `json:"scorecards,omitempty"`
 }
 
 type Query struct {
 }
 
-type Scorecard struct {
-	ID     string  `json:"id"`
-	Player *Player `json:"player"`
+type Team struct {
+	ID         uuid.UUID    `json:"id"`
+	Name       string       `json:"name"`
+	Handicap   int32        `json:"handicap"`
+	Scorecards []*Scorecard `json:"scorecards,omitempty"`
+	Players    []*Player    `json:"players,omitempty"`
 }
 
 type Tournament struct {
-	Name   string  `json:"name"`
-	Player *Player `json:"player"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+	Year time.Time `json:"year"`
 }

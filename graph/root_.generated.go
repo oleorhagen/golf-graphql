@@ -35,8 +35,12 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Course() CourseResolver
 	Mutation() MutationResolver
+	Player() PlayerResolver
 	Query() QueryResolver
+	Scorecard() ScorecardResolver
+	Team() TeamResolver
 }
 
 type DirectiveRoot struct {
@@ -44,12 +48,17 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Course struct {
-		Holes func(childComplexity int) int
-		Name  func(childComplexity int) int
+		CourseRating func(childComplexity int) int
+		Holes        func(childComplexity int) int
+		Name         func(childComplexity int) int
+		NrHoles      func(childComplexity int) int
+		Slope        func(childComplexity int) int
 	}
 
 	Hole struct {
-		Nr func(childComplexity int) int
+		Index func(childComplexity int) int
+		Nr    func(childComplexity int) int
+		Par   func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -57,22 +66,40 @@ type ComplexityRoot struct {
 	}
 
 	Player struct {
+		Handicap   func(childComplexity int) int
+		ID         func(childComplexity int) int
 		Name       func(childComplexity int) int
 		Scorecards func(childComplexity int) int
 	}
 
 	Query struct {
-		Players func(childComplexity int) int
+		Courses     func(childComplexity int) int
+		Players     func(childComplexity int) int
+		Scorecards  func(childComplexity int) int
+		Teams       func(childComplexity int) int
+		Tournaments func(childComplexity int) int
 	}
 
 	Scorecard struct {
-		ID     func(childComplexity int) int
-		Player func(childComplexity int) int
+		CourseName   func(childComplexity int) int
+		Handicap     func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Player       func(childComplexity int) int
+		TournamentID func(childComplexity int) int
+	}
+
+	Team struct {
+		Handicap   func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Name       func(childComplexity int) int
+		Players    func(childComplexity int) int
+		Scorecards func(childComplexity int) int
 	}
 
 	Tournament struct {
-		Name   func(childComplexity int) int
-		Player func(childComplexity int) int
+		ID   func(childComplexity int) int
+		Name func(childComplexity int) int
+		Year func(childComplexity int) int
 	}
 }
 
@@ -95,6 +122,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Course.course_rating":
+		if e.complexity.Course.CourseRating == nil {
+			break
+		}
+
+		return e.complexity.Course.CourseRating(childComplexity), true
+
 	case "Course.holes":
 		if e.complexity.Course.Holes == nil {
 			break
@@ -109,12 +143,40 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Course.Name(childComplexity), true
 
+	case "Course.nr_holes":
+		if e.complexity.Course.NrHoles == nil {
+			break
+		}
+
+		return e.complexity.Course.NrHoles(childComplexity), true
+
+	case "Course.slope":
+		if e.complexity.Course.Slope == nil {
+			break
+		}
+
+		return e.complexity.Course.Slope(childComplexity), true
+
+	case "Hole.index":
+		if e.complexity.Hole.Index == nil {
+			break
+		}
+
+		return e.complexity.Hole.Index(childComplexity), true
+
 	case "Hole.nr":
 		if e.complexity.Hole.Nr == nil {
 			break
 		}
 
 		return e.complexity.Hole.Nr(childComplexity), true
+
+	case "Hole.par":
+		if e.complexity.Hole.Par == nil {
+			break
+		}
+
+		return e.complexity.Hole.Par(childComplexity), true
 
 	case "Mutation.createPlayer":
 		if e.complexity.Mutation.CreatePlayer == nil {
@@ -127,6 +189,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.CreatePlayer(childComplexity, args["input"].(model.NewPlayer)), true
+
+	case "Player.handicap":
+		if e.complexity.Player.Handicap == nil {
+			break
+		}
+
+		return e.complexity.Player.Handicap(childComplexity), true
+
+	case "Player.id":
+		if e.complexity.Player.ID == nil {
+			break
+		}
+
+		return e.complexity.Player.ID(childComplexity), true
 
 	case "Player.name":
 		if e.complexity.Player.Name == nil {
@@ -142,12 +218,54 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Player.Scorecards(childComplexity), true
 
+	case "Query.courses":
+		if e.complexity.Query.Courses == nil {
+			break
+		}
+
+		return e.complexity.Query.Courses(childComplexity), true
+
 	case "Query.players":
 		if e.complexity.Query.Players == nil {
 			break
 		}
 
 		return e.complexity.Query.Players(childComplexity), true
+
+	case "Query.scorecards":
+		if e.complexity.Query.Scorecards == nil {
+			break
+		}
+
+		return e.complexity.Query.Scorecards(childComplexity), true
+
+	case "Query.teams":
+		if e.complexity.Query.Teams == nil {
+			break
+		}
+
+		return e.complexity.Query.Teams(childComplexity), true
+
+	case "Query.tournaments":
+		if e.complexity.Query.Tournaments == nil {
+			break
+		}
+
+		return e.complexity.Query.Tournaments(childComplexity), true
+
+	case "Scorecard.course_name":
+		if e.complexity.Scorecard.CourseName == nil {
+			break
+		}
+
+		return e.complexity.Scorecard.CourseName(childComplexity), true
+
+	case "Scorecard.handicap":
+		if e.complexity.Scorecard.Handicap == nil {
+			break
+		}
+
+		return e.complexity.Scorecard.Handicap(childComplexity), true
 
 	case "Scorecard.id":
 		if e.complexity.Scorecard.ID == nil {
@@ -163,6 +281,55 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Scorecard.Player(childComplexity), true
 
+	case "Scorecard.tournament_id":
+		if e.complexity.Scorecard.TournamentID == nil {
+			break
+		}
+
+		return e.complexity.Scorecard.TournamentID(childComplexity), true
+
+	case "Team.handicap":
+		if e.complexity.Team.Handicap == nil {
+			break
+		}
+
+		return e.complexity.Team.Handicap(childComplexity), true
+
+	case "Team.id":
+		if e.complexity.Team.ID == nil {
+			break
+		}
+
+		return e.complexity.Team.ID(childComplexity), true
+
+	case "Team.name":
+		if e.complexity.Team.Name == nil {
+			break
+		}
+
+		return e.complexity.Team.Name(childComplexity), true
+
+	case "Team.players":
+		if e.complexity.Team.Players == nil {
+			break
+		}
+
+		return e.complexity.Team.Players(childComplexity), true
+
+	case "Team.scorecards":
+		if e.complexity.Team.Scorecards == nil {
+			break
+		}
+
+		return e.complexity.Team.Scorecards(childComplexity), true
+
+	case "Tournament.id":
+		if e.complexity.Tournament.ID == nil {
+			break
+		}
+
+		return e.complexity.Tournament.ID(childComplexity), true
+
 	case "Tournament.name":
 		if e.complexity.Tournament.Name == nil {
 			break
@@ -170,12 +337,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Tournament.Name(childComplexity), true
 
-	case "Tournament.player":
-		if e.complexity.Tournament.Player == nil {
+	case "Tournament.year":
+		if e.complexity.Tournament.Year == nil {
 			break
 		}
 
-		return e.complexity.Tournament.Player(childComplexity), true
+		return e.complexity.Tournament.Year(childComplexity), true
 
 	}
 	return 0, false

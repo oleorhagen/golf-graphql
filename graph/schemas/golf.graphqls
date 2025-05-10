@@ -2,31 +2,56 @@
 
 
 type Player {
+  id: ID!
   name: String!
+  handicap: Int!
   scorecards: [Scorecard]
+}
+
+type Team {
+  id: ID!
+  name: String!
+  handicap: Int!
+  scorecards: [Scorecard]
+  players: [Player!]
 }
 
 type Scorecard {
   id: ID!
+  tournament_id: ID!
+  handicap: Int!
+  course_name: String!
   player: Player!
 }
 
 type Course {
   name: String!
+  slope: Int!
+  course_rating: Float!
+  nr_holes: Int!
   holes: [Hole!]
 }
 
 type Hole {
   nr: Int!
+  index: Int!
+  par: Int!
 }
 
+scalar Time
+
 type Tournament {
+  id: ID!
   name: String!
-  player: Player!
+  year: Time!
 }
 
 type Query {
   players: [Player]
+  teams: [Team]
+  scorecards: [Scorecard]
+  courses: [Course]
+  tournaments: [Tournament]
 }
 
 input NewPlayer {
