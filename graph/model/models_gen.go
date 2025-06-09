@@ -3,6 +3,10 @@
 package model
 
 import (
+	"bytes"
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -36,6 +40,13 @@ type Player struct {
 	Scorecards []*Scorecard `json:"scorecards,omitempty"`
 }
 
+type PlayerCondition struct {
+	Name                *string `json:"name,omitempty"`
+	Handicap            *int32  `json:"handicap,omitempty"`
+	HandicapGreaterThan *int32  `json:"handicapGreaterThan,omitempty"`
+	HandicapLessThan    *int32  `json:"handicapLessThan,omitempty"`
+}
+
 type Query struct {
 }
 
@@ -51,4 +62,67 @@ type Tournament struct {
 	ID   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
 	Year time.Time `json:"year"`
+}
+
+type PlayersOrderBy string
+
+const (
+	PlayersOrderByNameAsc      PlayersOrderBy = "NAME_ASC"
+	PlayersOrderByNameDesc     PlayersOrderBy = "NAME_DESC"
+	PlayersOrderByHandicapAsc  PlayersOrderBy = "HANDICAP_ASC"
+	PlayersOrderByHandicapDesc PlayersOrderBy = "HANDICAP_DESC"
+	PlayersOrderByIDAsc        PlayersOrderBy = "ID_ASC"
+	PlayersOrderByIDDesc       PlayersOrderBy = "ID_DESC"
+)
+
+var AllPlayersOrderBy = []PlayersOrderBy{
+	PlayersOrderByNameAsc,
+	PlayersOrderByNameDesc,
+	PlayersOrderByHandicapAsc,
+	PlayersOrderByHandicapDesc,
+	PlayersOrderByIDAsc,
+	PlayersOrderByIDDesc,
+}
+
+func (e PlayersOrderBy) IsValid() bool {
+	switch e {
+	case PlayersOrderByNameAsc, PlayersOrderByNameDesc, PlayersOrderByHandicapAsc, PlayersOrderByHandicapDesc, PlayersOrderByIDAsc, PlayersOrderByIDDesc:
+		return true
+	}
+	return false
+}
+
+func (e PlayersOrderBy) String() string {
+	return string(e)
+}
+
+func (e *PlayersOrderBy) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PlayersOrderBy(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PlayersOrderBy", str)
+	}
+	return nil
+}
+
+func (e PlayersOrderBy) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *PlayersOrderBy) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e PlayersOrderBy) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
 }

@@ -1,6 +1,3 @@
-
-
-
 type Player {
   id: ID!
   name: String!
@@ -46,8 +43,31 @@ type Tournament {
   year: Time!
 }
 
+# Player ordering enum
+enum PlayersOrderBy {
+  NAME_ASC
+  NAME_DESC
+  HANDICAP_ASC
+  HANDICAP_DESC
+  ID_ASC
+  ID_DESC
+}
+
+# Player filtering input
+input PlayerCondition {
+  name: String
+  handicap: Int
+  handicapGreaterThan: Int
+  handicapLessThan: Int
+}
+
 type Query {
-  players: [Player]
+  players(
+    limit: Int = 10
+    offset: Int = 0
+    orderBy: PlayersOrderBy = NAME_ASC
+    condition: PlayerCondition
+  ): [Player!]!
   teams: [Team]
   scorecards: [Scorecard]
   courses: [Course]
