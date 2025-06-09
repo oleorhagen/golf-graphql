@@ -61,6 +61,81 @@ input PlayerCondition {
   handicapLessThan: Int
 }
 
+# Team ordering enum
+enum TeamsOrderBy {
+  NAME_ASC
+  NAME_DESC
+  HANDICAP_ASC
+  HANDICAP_DESC
+  ID_ASC
+  ID_DESC
+}
+
+# Team filtering input
+input TeamCondition {
+  name: String
+  handicap: Int
+  handicapGreaterThan: Int
+  handicapLessThan: Int
+}
+
+# Course ordering enum
+enum CoursesOrderBy {
+  NAME_ASC
+  NAME_DESC
+  SLOPE_ASC
+  SLOPE_DESC
+  COURSE_RATING_ASC
+  COURSE_RATING_DESC
+  NR_HOLES_ASC
+  NR_HOLES_DESC
+}
+
+# Course filtering input
+input CourseCondition {
+  name: String
+  slope: Int
+  slopeGreaterThan: Int
+  slopeLessThan: Int
+  nrHoles: Int
+}
+
+# Tournament ordering enum
+enum TournamentsOrderBy {
+  NAME_ASC
+  NAME_DESC
+  YEAR_ASC
+  YEAR_DESC
+  ID_ASC
+  ID_DESC
+}
+
+# Tournament filtering input
+input TournamentCondition {
+  name: String
+  year: Time
+}
+
+# Scorecard ordering enum
+enum ScorecardsOrderBy {
+  HANDICAP_ASC
+  HANDICAP_DESC
+  COURSE_NAME_ASC
+  COURSE_NAME_DESC
+  ID_ASC
+  ID_DESC
+}
+
+# Scorecard filtering input
+input ScorecardCondition {
+  handicap: Int
+  handicapGreaterThan: Int
+  handicapLessThan: Int
+  courseName: String
+  tournamentId: ID
+  playerId: ID
+}
+
 type Query {
   players(
     limit: Int = 10
@@ -68,10 +143,34 @@ type Query {
     orderBy: PlayersOrderBy = NAME_ASC
     condition: PlayerCondition
   ): [Player!]!
-  teams: [Team]
-  scorecards: [Scorecard]
-  courses: [Course]
-  tournaments: [Tournament]
+
+  teams(
+    limit: Int = 10
+    offset: Int = 0
+    orderBy: TeamsOrderBy = NAME_ASC
+    condition: TeamCondition
+  ): [Team!]!
+
+  courses(
+    limit: Int = 10
+    offset: Int = 0
+    orderBy: CoursesOrderBy = NAME_ASC
+    condition: CourseCondition
+  ): [Course!]!
+
+  tournaments(
+    limit: Int = 10
+    offset: Int = 0
+    orderBy: TournamentsOrderBy = NAME_ASC
+    condition: TournamentCondition
+  ): [Tournament!]!
+
+  scorecards(
+    limit: Int = 10
+    offset: Int = 0
+    orderBy: ScorecardsOrderBy = ID_ASC
+    condition: ScorecardCondition
+  ): [Scorecard!]!
 }
 
 input NewPlayer {

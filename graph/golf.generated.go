@@ -31,10 +31,10 @@ type PlayerResolver interface {
 }
 type QueryResolver interface {
 	Players(ctx context.Context, limit *int32, offset *int32, orderBy *model.PlayersOrderBy, condition *model.PlayerCondition) ([]*model.Player, error)
-	Teams(ctx context.Context) ([]*model.Team, error)
-	Scorecards(ctx context.Context) ([]*model.Scorecard, error)
-	Courses(ctx context.Context) ([]*model.Course, error)
-	Tournaments(ctx context.Context) ([]*model.Tournament, error)
+	Teams(ctx context.Context, limit *int32, offset *int32, orderBy *model.TeamsOrderBy, condition *model.TeamCondition) ([]*model.Team, error)
+	Courses(ctx context.Context, limit *int32, offset *int32, orderBy *model.CoursesOrderBy, condition *model.CourseCondition) ([]*model.Course, error)
+	Tournaments(ctx context.Context, limit *int32, offset *int32, orderBy *model.TournamentsOrderBy, condition *model.TournamentCondition) ([]*model.Tournament, error)
+	Scorecards(ctx context.Context, limit *int32, offset *int32, orderBy *model.ScorecardsOrderBy, condition *model.ScorecardCondition) ([]*model.Scorecard, error)
 }
 type ScorecardResolver interface {
 	Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error)
@@ -91,6 +91,83 @@ func (ec *executionContext) field_Query___type_argsName(
 	}
 
 	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_courses_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_courses_argsLimit(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg0
+	arg1, err := ec.field_Query_courses_argsOffset(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["offset"] = arg1
+	arg2, err := ec.field_Query_courses_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg2
+	arg3, err := ec.field_Query_courses_argsCondition(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["condition"] = arg3
+	return args, nil
+}
+func (ec *executionContext) field_Query_courses_argsLimit(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+	if tmp, ok := rawArgs["limit"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_courses_argsOffset(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+	if tmp, ok := rawArgs["offset"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_courses_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.CoursesOrderBy, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOCoursesOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCoursesOrderBy(ctx, tmp)
+	}
+
+	var zeroVal *model.CoursesOrderBy
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_courses_argsCondition(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.CourseCondition, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("condition"))
+	if tmp, ok := rawArgs["condition"]; ok {
+		return ec.unmarshalOCourseCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourseCondition(ctx, tmp)
+	}
+
+	var zeroVal *model.CourseCondition
 	return zeroVal, nil
 }
 
@@ -168,6 +245,237 @@ func (ec *executionContext) field_Query_players_argsCondition(
 	}
 
 	var zeroVal *model.PlayerCondition
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_scorecards_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_scorecards_argsLimit(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg0
+	arg1, err := ec.field_Query_scorecards_argsOffset(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["offset"] = arg1
+	arg2, err := ec.field_Query_scorecards_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg2
+	arg3, err := ec.field_Query_scorecards_argsCondition(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["condition"] = arg3
+	return args, nil
+}
+func (ec *executionContext) field_Query_scorecards_argsLimit(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+	if tmp, ok := rawArgs["limit"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_scorecards_argsOffset(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+	if tmp, ok := rawArgs["offset"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_scorecards_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.ScorecardsOrderBy, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOScorecardsOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardsOrderBy(ctx, tmp)
+	}
+
+	var zeroVal *model.ScorecardsOrderBy
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_scorecards_argsCondition(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.ScorecardCondition, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("condition"))
+	if tmp, ok := rawArgs["condition"]; ok {
+		return ec.unmarshalOScorecardCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardCondition(ctx, tmp)
+	}
+
+	var zeroVal *model.ScorecardCondition
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_teams_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_teams_argsLimit(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg0
+	arg1, err := ec.field_Query_teams_argsOffset(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["offset"] = arg1
+	arg2, err := ec.field_Query_teams_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg2
+	arg3, err := ec.field_Query_teams_argsCondition(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["condition"] = arg3
+	return args, nil
+}
+func (ec *executionContext) field_Query_teams_argsLimit(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+	if tmp, ok := rawArgs["limit"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_teams_argsOffset(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+	if tmp, ok := rawArgs["offset"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_teams_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.TeamsOrderBy, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOTeamsOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeamsOrderBy(ctx, tmp)
+	}
+
+	var zeroVal *model.TeamsOrderBy
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_teams_argsCondition(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.TeamCondition, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("condition"))
+	if tmp, ok := rawArgs["condition"]; ok {
+		return ec.unmarshalOTeamCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeamCondition(ctx, tmp)
+	}
+
+	var zeroVal *model.TeamCondition
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_tournaments_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_tournaments_argsLimit(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg0
+	arg1, err := ec.field_Query_tournaments_argsOffset(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["offset"] = arg1
+	arg2, err := ec.field_Query_tournaments_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg2
+	arg3, err := ec.field_Query_tournaments_argsCondition(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["condition"] = arg3
+	return args, nil
+}
+func (ec *executionContext) field_Query_tournaments_argsLimit(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+	if tmp, ok := rawArgs["limit"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_tournaments_argsOffset(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+	if tmp, ok := rawArgs["offset"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_tournaments_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.TournamentsOrderBy, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOTournamentsOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournamentsOrderBy(ctx, tmp)
+	}
+
+	var zeroVal *model.TournamentsOrderBy
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_tournaments_argsCondition(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.TournamentCondition, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("condition"))
+	if tmp, ok := rawArgs["condition"]; ok {
+		return ec.unmarshalOTournamentCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournamentCondition(ctx, tmp)
+	}
+
+	var zeroVal *model.TournamentCondition
 	return zeroVal, nil
 }
 
@@ -865,21 +1173,24 @@ func (ec *executionContext) _Query_teams(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Teams(rctx)
+		return ec.resolvers.Query().Teams(rctx, fc.Args["limit"].(*int32), fc.Args["offset"].(*int32), fc.Args["orderBy"].(*model.TeamsOrderBy), fc.Args["condition"].(*model.TeamCondition))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.([]*model.Team)
 	fc.Result = res
-	return ec.marshalOTeam2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeam(ctx, field.Selections, res)
+	return ec.marshalNTeam2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeamᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_teams(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_teams(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -901,58 +1212,16 @@ func (ec *executionContext) fieldContext_Query_teams(_ context.Context, field gr
 			return nil, fmt.Errorf("no field named %q was found under type Team", field.Name)
 		},
 	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_scorecards(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_scorecards(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
 	defer func() {
 		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Scorecards(rctx)
-	})
-	if err != nil {
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_teams_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Scorecard)
-	fc.Result = res
-	return ec.marshalOScorecard2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecard(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_scorecards(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Scorecard_id(ctx, field)
-			case "tournament_id":
-				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
-			case "handicap":
-				return ec.fieldContext_Scorecard_handicap(ctx, field)
-			case "course_name":
-				return ec.fieldContext_Scorecard_course_name(ctx, field)
-			case "player":
-				return ec.fieldContext_Scorecard_player(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Scorecard", field.Name)
-		},
+		return fc, err
 	}
 	return fc, nil
 }
@@ -971,21 +1240,24 @@ func (ec *executionContext) _Query_courses(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Courses(rctx)
+		return ec.resolvers.Query().Courses(rctx, fc.Args["limit"].(*int32), fc.Args["offset"].(*int32), fc.Args["orderBy"].(*model.CoursesOrderBy), fc.Args["condition"].(*model.CourseCondition))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.([]*model.Course)
 	fc.Result = res
-	return ec.marshalOCourse2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourse(ctx, field.Selections, res)
+	return ec.marshalNCourse2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_courses(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_courses(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1007,6 +1279,17 @@ func (ec *executionContext) fieldContext_Query_courses(_ context.Context, field 
 			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_courses_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -1024,21 +1307,24 @@ func (ec *executionContext) _Query_tournaments(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Tournaments(rctx)
+		return ec.resolvers.Query().Tournaments(rctx, fc.Args["limit"].(*int32), fc.Args["offset"].(*int32), fc.Args["orderBy"].(*model.TournamentsOrderBy), fc.Args["condition"].(*model.TournamentCondition))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.([]*model.Tournament)
 	fc.Result = res
-	return ec.marshalOTournament2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournament(ctx, field.Selections, res)
+	return ec.marshalNTournament2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournamentᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_tournaments(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_tournaments(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1055,6 +1341,84 @@ func (ec *executionContext) fieldContext_Query_tournaments(_ context.Context, fi
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Tournament", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_tournaments_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_scorecards(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_scorecards(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Scorecards(rctx, fc.Args["limit"].(*int32), fc.Args["offset"].(*int32), fc.Args["orderBy"].(*model.ScorecardsOrderBy), fc.Args["condition"].(*model.ScorecardCondition))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Scorecard)
+	fc.Result = res
+	return ec.marshalNScorecard2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_scorecards(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Scorecard_id(ctx, field)
+			case "tournament_id":
+				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
+			case "handicap":
+				return ec.fieldContext_Scorecard_handicap(ctx, field)
+			case "course_name":
+				return ec.fieldContext_Scorecard_course_name(ctx, field)
+			case "player":
+				return ec.fieldContext_Scorecard_player(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Scorecard", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_scorecards_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -1792,6 +2156,61 @@ func (ec *executionContext) fieldContext_Tournament_year(_ context.Context, fiel
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputCourseCondition(ctx context.Context, obj any) (model.CourseCondition, error) {
+	var it model.CourseCondition
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "slope", "slopeGreaterThan", "slopeLessThan", "nrHoles"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "slope":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slope"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Slope = data
+		case "slopeGreaterThan":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slopeGreaterThan"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SlopeGreaterThan = data
+		case "slopeLessThan":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slopeLessThan"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SlopeLessThan = data
+		case "nrHoles":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nrHoles"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NrHoles = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewPlayer(ctx context.Context, obj any) (model.NewPlayer, error) {
 	var it model.NewPlayer
 	asMap := map[string]any{}
@@ -1861,6 +2280,150 @@ func (ec *executionContext) unmarshalInputPlayerCondition(ctx context.Context, o
 				return it, err
 			}
 			it.HandicapLessThan = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputScorecardCondition(ctx context.Context, obj any) (model.ScorecardCondition, error) {
+	var it model.ScorecardCondition
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"handicap", "handicapGreaterThan", "handicapLessThan", "courseName", "tournamentId", "playerId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "handicap":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("handicap"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Handicap = data
+		case "handicapGreaterThan":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("handicapGreaterThan"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HandicapGreaterThan = data
+		case "handicapLessThan":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("handicapLessThan"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HandicapLessThan = data
+		case "courseName":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("courseName"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CourseName = data
+		case "tournamentId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tournamentId"))
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TournamentID = data
+		case "playerId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("playerId"))
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlayerID = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTeamCondition(ctx context.Context, obj any) (model.TeamCondition, error) {
+	var it model.TeamCondition
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "handicap", "handicapGreaterThan", "handicapLessThan"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "handicap":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("handicap"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Handicap = data
+		case "handicapGreaterThan":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("handicapGreaterThan"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HandicapGreaterThan = data
+		case "handicapLessThan":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("handicapLessThan"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HandicapLessThan = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTournamentCondition(ctx context.Context, obj any) (model.TournamentCondition, error) {
+	var it model.TournamentCondition
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "year"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "year":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("year"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Year = data
 		}
 	}
 
@@ -2186,32 +2749,16 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "teams":
 			field := field
 
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_teams(ctx, field)
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "scorecards":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_scorecards(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -2224,13 +2771,16 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "courses":
 			field := field
 
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_courses(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -2243,13 +2793,38 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "tournaments":
 			field := field
 
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_tournaments(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "scorecards":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_scorecards(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -2548,6 +3123,60 @@ func (ec *executionContext) _Tournament(ctx context.Context, sel ast.SelectionSe
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNCourse2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Course) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCourse2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourse(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNCourse2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourse(ctx context.Context, sel ast.SelectionSet, v *model.Course) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Course(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNHole2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐHole(ctx context.Context, sel ast.SelectionSet, v *model.Hole) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -2621,25 +3250,7 @@ func (ec *executionContext) marshalNPlayer2ᚖgithubᚗcomᚋoleorhagenᚋgolf�
 	return ec._Player(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
-	res, err := graphql.UnmarshalTime(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
-	res := graphql.MarshalTime(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) marshalOCourse2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourse(ctx context.Context, sel ast.SelectionSet, v []*model.Course) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
+func (ec *executionContext) marshalNScorecard2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Scorecard) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2663,7 +3274,7 @@ func (ec *executionContext) marshalOCourse2ᚕᚖgithubᚗcomᚋoleorhagenᚋgol
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOCourse2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourse(ctx, sel, v[i])
+			ret[i] = ec.marshalNScorecard2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecard(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2674,14 +3285,170 @@ func (ec *executionContext) marshalOCourse2ᚕᚖgithubᚗcomᚋoleorhagenᚋgol
 	}
 	wg.Wait()
 
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
 	return ret
 }
 
-func (ec *executionContext) marshalOCourse2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourse(ctx context.Context, sel ast.SelectionSet, v *model.Course) graphql.Marshaler {
+func (ec *executionContext) marshalNScorecard2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecard(ctx context.Context, sel ast.SelectionSet, v *model.Scorecard) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Scorecard(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNTeam2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeamᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Team) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTeam2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeam(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNTeam2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeam(ctx context.Context, sel ast.SelectionSet, v *model.Team) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Team(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNTournament2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournamentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Tournament) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTournament2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournament(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNTournament2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournament(ctx context.Context, sel ast.SelectionSet, v *model.Tournament) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Tournament(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOCourseCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourseCondition(ctx context.Context, v any) (*model.CourseCondition, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCourseCondition(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOCoursesOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCoursesOrderBy(ctx context.Context, v any) (*model.CoursesOrderBy, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.CoursesOrderBy)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOCoursesOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCoursesOrderBy(ctx context.Context, sel ast.SelectionSet, v *model.CoursesOrderBy) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec._Course(ctx, sel, v)
+	return v
 }
 
 func (ec *executionContext) marshalOHole2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐHoleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Hole) graphql.Marshaler {
@@ -2850,100 +3617,92 @@ func (ec *executionContext) marshalOScorecard2ᚖgithubᚗcomᚋoleorhagenᚋgol
 	return ec._Scorecard(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOTeam2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeam(ctx context.Context, sel ast.SelectionSet, v []*model.Team) graphql.Marshaler {
+func (ec *executionContext) unmarshalOScorecardCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardCondition(ctx context.Context, v any) (*model.ScorecardCondition, error) {
 	if v == nil {
-		return graphql.Null
+		return nil, nil
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOTeam2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeam(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
+	res, err := ec.unmarshalInputScorecardCondition(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOTeam2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeam(ctx context.Context, sel ast.SelectionSet, v *model.Team) graphql.Marshaler {
+func (ec *executionContext) unmarshalOScorecardsOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardsOrderBy(ctx context.Context, v any) (*model.ScorecardsOrderBy, error) {
 	if v == nil {
-		return graphql.Null
+		return nil, nil
 	}
-	return ec._Team(ctx, sel, v)
+	var res = new(model.ScorecardsOrderBy)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOTournament2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournament(ctx context.Context, sel ast.SelectionSet, v []*model.Tournament) graphql.Marshaler {
+func (ec *executionContext) marshalOScorecardsOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardsOrderBy(ctx context.Context, sel ast.SelectionSet, v *model.ScorecardsOrderBy) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOTournament2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournament(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
+	return v
 }
 
-func (ec *executionContext) marshalOTournament2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournament(ctx context.Context, sel ast.SelectionSet, v *model.Tournament) graphql.Marshaler {
+func (ec *executionContext) unmarshalOTeamCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeamCondition(ctx context.Context, v any) (*model.TeamCondition, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputTeamCondition(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOTeamsOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeamsOrderBy(ctx context.Context, v any) (*model.TeamsOrderBy, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.TeamsOrderBy)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTeamsOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeamsOrderBy(ctx context.Context, sel ast.SelectionSet, v *model.TeamsOrderBy) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec._Tournament(ctx, sel, v)
+	return v
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v any) (*time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalTime(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOTournamentCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournamentCondition(ctx context.Context, v any) (*model.TournamentCondition, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputTournamentCondition(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOTournamentsOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournamentsOrderBy(ctx context.Context, v any) (*model.TournamentsOrderBy, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.TournamentsOrderBy)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTournamentsOrderBy2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTournamentsOrderBy(ctx context.Context, sel ast.SelectionSet, v *model.TournamentsOrderBy) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 // endregion ***************************** type.gotpl *****************************

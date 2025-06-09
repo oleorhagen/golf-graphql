@@ -170,37 +170,427 @@ func (r *queryResolver) Players(ctx context.Context, limit *int32, offset *int32
 }
 
 // Teams is the resolver for the teams field.
-func (r *queryResolver) Teams(ctx context.Context) ([]*model.Team, error) {
+func (r *queryResolver) Teams(ctx context.Context, limit *int32, offset *int32, orderBy *model.TeamsOrderBy, condition *model.TeamCondition) ([]*model.Team, error) {
+	// Build WHERE clause
+	whereClause := "WHERE 1=1"
+	args := []interface{}{}
+	argIndex := 1
+
+	if condition != nil {
+		if condition.Name != nil {
+			whereClause += fmt.Sprintf(" AND name ILIKE $%d", argIndex)
+			args = append(args, "%"+*condition.Name+"%")
+			argIndex++
+		}
+		if condition.Handicap != nil {
+			whereClause += fmt.Sprintf(" AND handicap = $%d", argIndex)
+			args = append(args, *condition.Handicap)
+			argIndex++
+		}
+		if condition.HandicapGreaterThan != nil {
+			whereClause += fmt.Sprintf(" AND handicap > $%d", argIndex)
+			args = append(args, *condition.HandicapGreaterThan)
+			argIndex++
+		}
+		if condition.HandicapLessThan != nil {
+			whereClause += fmt.Sprintf(" AND handicap < $%d", argIndex)
+			args = append(args, *condition.HandicapLessThan)
+			argIndex++
+		}
+	}
+
+	// Build ORDER BY clause
+	orderClause := "ORDER BY name ASC" // default
+	if orderBy != nil {
+		switch *orderBy {
+		case model.TeamsOrderByNameAsc:
+			orderClause = "ORDER BY name ASC"
+		case model.TeamsOrderByNameDesc:
+			orderClause = "ORDER BY name DESC"
+		case model.TeamsOrderByHandicapAsc:
+			orderClause = "ORDER BY handicap ASC"
+		case model.TeamsOrderByHandicapDesc:
+			orderClause = "ORDER BY handicap DESC"
+		case model.TeamsOrderByIDAsc:
+			orderClause = "ORDER BY id ASC"
+		case model.TeamsOrderByIDDesc:
+			orderClause = "ORDER BY id DESC"
+		}
+	}
+
+	// Handle pagination parameters
+	limitValue := int32(10) // default limit
+	offsetValue := int32(0) // default offset
+
+	if limit != nil {
+		limitValue = *limit
+		if limitValue > 100 { // max limit
+			limitValue = 100
+		}
+		if limitValue < 1 { // min limit
+			limitValue = 1
+		}
+	}
+
+	if offset != nil {
+		offsetValue = *offset
+		if offsetValue < 0 {
+			offsetValue = 0
+		}
+	}
+
+	// Build final query
+	query := fmt.Sprintf(`
+		SELECT id, name, handicap
+		FROM team %s %s
+		LIMIT $%d OFFSET $%d`,
+		whereClause, orderClause, argIndex, argIndex+1)
+
+	args = append(args, limitValue, offsetValue)
+
+	// Execute query
+	rows, err := r.DB.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to query teams: %w", err)
+	}
+
 	var teams []*model.Team
 	var id uuid.UUID
-	var n string
+	var name string
 	var handicap int32
-	rows, err := r.DB.Query(ctx, "select id, name, handicap from team")
-	_, err = pgx.ForEachRow(rows, []any{&id, &n, &handicap}, func() error {
-		teams = append(teams, &model.Team{ID: id, Name: n, Handicap: handicap})
+
+	_, err = pgx.ForEachRow(rows, []any{&id, &name, &handicap}, func() error {
+		teams = append(teams, &model.Team{
+			ID:       id,
+			Name:     name,
+			Handicap: handicap,
+		})
 		return nil
 	})
+
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		return nil, fmt.Errorf("Failed to query the database for teams: %w", err)
+		return nil, fmt.Errorf("Failed to fetch teams from query: %w", err)
 	}
 
 	return teams, nil
 }
 
+// Courses is the resolver for the courses field.
+func (r *queryResolver) Courses(ctx context.Context, limit *int32, offset *int32, orderBy *model.CoursesOrderBy, condition *model.CourseCondition) ([]*model.Course, error) {
+	// Build WHERE clause
+	whereClause := "WHERE 1=1"
+	args := []interface{}{}
+	argIndex := 1
+
+	if condition != nil {
+		if condition.Name != nil {
+			whereClause += fmt.Sprintf(" AND name ILIKE $%d", argIndex)
+			args = append(args, "%"+*condition.Name+"%")
+			argIndex++
+		}
+		if condition.Slope != nil {
+			whereClause += fmt.Sprintf(" AND slope = $%d", argIndex)
+			args = append(args, *condition.Slope)
+			argIndex++
+		}
+		if condition.SlopeGreaterThan != nil {
+			whereClause += fmt.Sprintf(" AND slope > $%d", argIndex)
+			args = append(args, *condition.SlopeGreaterThan)
+			argIndex++
+		}
+		if condition.SlopeLessThan != nil {
+			whereClause += fmt.Sprintf(" AND slope < $%d", argIndex)
+			args = append(args, *condition.SlopeLessThan)
+			argIndex++
+		}
+		if condition.NrHoles != nil {
+			whereClause += fmt.Sprintf(" AND nr_holes = $%d", argIndex)
+			args = append(args, *condition.NrHoles)
+			argIndex++
+		}
+	}
+
+	// Build ORDER BY clause
+	orderClause := "ORDER BY name ASC" // default
+	if orderBy != nil {
+		switch *orderBy {
+		case model.CoursesOrderByNameAsc:
+			orderClause = "ORDER BY name ASC"
+		case model.CoursesOrderByNameDesc:
+			orderClause = "ORDER BY name DESC"
+		case model.CoursesOrderBySlopeAsc:
+			orderClause = "ORDER BY slope ASC"
+		case model.CoursesOrderBySlopeDesc:
+			orderClause = "ORDER BY slope DESC"
+		case model.CoursesOrderByCourseRatingAsc:
+			orderClause = "ORDER BY course_rating ASC"
+		case model.CoursesOrderByCourseRatingDesc:
+			orderClause = "ORDER BY course_rating DESC"
+		case model.CoursesOrderByNrHolesAsc:
+			orderClause = "ORDER BY nr_holes ASC"
+		case model.CoursesOrderByNrHolesDesc:
+			orderClause = "ORDER BY nr_holes DESC"
+		}
+	}
+
+	// Handle pagination parameters
+	limitValue := int32(10) // default limit
+	offsetValue := int32(0) // default offset
+
+	if limit != nil {
+		limitValue = *limit
+		if limitValue > 100 { // max limit
+			limitValue = 100
+		}
+		if limitValue < 1 { // min limit
+			limitValue = 1
+		}
+	}
+
+	if offset != nil {
+		offsetValue = *offset
+		if offsetValue < 0 {
+			offsetValue = 0
+		}
+	}
+
+	// Build final query
+	query := fmt.Sprintf(`
+		SELECT name, slope, course_rating, nr_holes
+		FROM course %s %s
+		LIMIT $%d OFFSET $%d`,
+		whereClause, orderClause, argIndex, argIndex+1)
+
+	args = append(args, limitValue, offsetValue)
+
+	// Execute query
+	rows, err := r.DB.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to query courses: %w", err)
+	}
+
+	var courses []*model.Course
+	var name string
+	var slope int32
+	var course_rating float64
+	var nr_holes int32
+
+	_, err = pgx.ForEachRow(rows, []any{&name, &slope, &course_rating, &nr_holes}, func() error {
+		courses = append(courses, &model.Course{
+			Name:         name,
+			Slope:        slope,
+			CourseRating: course_rating,
+			NrHoles:      nr_holes,
+		})
+		return nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to fetch courses from query: %w", err)
+	}
+
+	return courses, nil
+}
+
+// Tournaments is the resolver for the tournaments field.
+func (r *queryResolver) Tournaments(ctx context.Context, limit *int32, offset *int32, orderBy *model.TournamentsOrderBy, condition *model.TournamentCondition) ([]*model.Tournament, error) {
+	// Build WHERE clause
+	whereClause := "WHERE 1=1"
+	args := []interface{}{}
+	argIndex := 1
+
+	if condition != nil {
+		if condition.Name != nil {
+			whereClause += fmt.Sprintf(" AND name ILIKE $%d", argIndex)
+			args = append(args, "%"+*condition.Name+"%")
+			argIndex++
+		}
+		if condition.Year != nil {
+			whereClause += fmt.Sprintf(" AND year = $%d", argIndex)
+			args = append(args, *condition.Year)
+			argIndex++
+		}
+	}
+
+	// Build ORDER BY clause
+	orderClause := "ORDER BY name ASC" // default
+	if orderBy != nil {
+		switch *orderBy {
+		case model.TournamentsOrderByNameAsc:
+			orderClause = "ORDER BY name ASC"
+		case model.TournamentsOrderByNameDesc:
+			orderClause = "ORDER BY name DESC"
+		case model.TournamentsOrderByYearAsc:
+			orderClause = "ORDER BY year ASC"
+		case model.TournamentsOrderByYearDesc:
+			orderClause = "ORDER BY year DESC"
+		case model.TournamentsOrderByIDAsc:
+			orderClause = "ORDER BY id ASC"
+		case model.TournamentsOrderByIDDesc:
+			orderClause = "ORDER BY id DESC"
+		}
+	}
+
+	// Handle pagination parameters
+	limitValue := int32(10) // default limit
+	offsetValue := int32(0) // default offset
+
+	if limit != nil {
+		limitValue = *limit
+		if limitValue > 100 { // max limit
+			limitValue = 100
+		}
+		if limitValue < 1 { // min limit
+			limitValue = 1
+		}
+	}
+
+	if offset != nil {
+		offsetValue = *offset
+		if offsetValue < 0 {
+			offsetValue = 0
+		}
+	}
+
+	// Build final query
+	query := fmt.Sprintf(`
+		SELECT id, name, year
+		FROM tournament %s %s
+		LIMIT $%d OFFSET $%d`,
+		whereClause, orderClause, argIndex, argIndex+1)
+
+	args = append(args, limitValue, offsetValue)
+
+	// Execute query
+	rows, err := r.DB.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to query tournaments: %w", err)
+	}
+
+	var tournaments []*model.Tournament
+	var id uuid.UUID
+	var name string
+	var year time.Time
+
+	_, err = pgx.ForEachRow(rows, []any{&id, &name, &year}, func() error {
+		tournaments = append(tournaments, &model.Tournament{
+			ID:   id,
+			Name: name,
+			Year: year,
+		})
+		return nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to fetch tournaments from query: %w", err)
+	}
+
+	return tournaments, nil
+}
+
 // Scorecards is the resolver for the scorecards field.
-func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, error) {
+func (r *queryResolver) Scorecards(ctx context.Context, limit *int32, offset *int32, orderBy *model.ScorecardsOrderBy, condition *model.ScorecardCondition) ([]*model.Scorecard, error) {
+	// Build WHERE clause
+	whereClause := "WHERE 1=1"
+	args := []interface{}{}
+	argIndex := 1
+
+	if condition != nil {
+		if condition.Handicap != nil {
+			whereClause += fmt.Sprintf(" AND handicap = $%d", argIndex)
+			args = append(args, *condition.Handicap)
+			argIndex++
+		}
+		if condition.HandicapGreaterThan != nil {
+			whereClause += fmt.Sprintf(" AND handicap > $%d", argIndex)
+			args = append(args, *condition.HandicapGreaterThan)
+			argIndex++
+		}
+		if condition.HandicapLessThan != nil {
+			whereClause += fmt.Sprintf(" AND handicap < $%d", argIndex)
+			args = append(args, *condition.HandicapLessThan)
+			argIndex++
+		}
+		if condition.CourseName != nil {
+			whereClause += fmt.Sprintf(" AND course_name ILIKE $%d", argIndex)
+			args = append(args, "%"+*condition.CourseName+"%")
+			argIndex++
+		}
+		if condition.TournamentID != nil {
+			whereClause += fmt.Sprintf(" AND tournament_id = $%d", argIndex)
+			args = append(args, *condition.TournamentID)
+			argIndex++
+		}
+		if condition.PlayerID != nil {
+			whereClause += fmt.Sprintf(" AND scorer_id = $%d", argIndex)
+			args = append(args, *condition.PlayerID)
+			argIndex++
+		}
+	}
+
+	// Build ORDER BY clause
+	orderClause := "ORDER BY id ASC" // default
+	if orderBy != nil {
+		switch *orderBy {
+		case model.ScorecardsOrderByHandicapAsc:
+			orderClause = "ORDER BY handicap ASC"
+		case model.ScorecardsOrderByHandicapDesc:
+			orderClause = "ORDER BY handicap DESC"
+		case model.ScorecardsOrderByCourseNameAsc:
+			orderClause = "ORDER BY course_name ASC"
+		case model.ScorecardsOrderByCourseNameDesc:
+			orderClause = "ORDER BY course_name DESC"
+		case model.ScorecardsOrderByIDAsc:
+			orderClause = "ORDER BY id ASC"
+		case model.ScorecardsOrderByIDDesc:
+			orderClause = "ORDER BY id DESC"
+		}
+	}
+
+	// Handle pagination parameters
+	limitValue := int32(10) // default limit
+	offsetValue := int32(0) // default offset
+
+	if limit != nil {
+		limitValue = *limit
+		if limitValue > 100 { // max limit
+			limitValue = 100
+		}
+		if limitValue < 1 { // min limit
+			limitValue = 1
+		}
+	}
+
+	if offset != nil {
+		offsetValue = *offset
+		if offsetValue < 0 {
+			offsetValue = 0
+		}
+	}
+
+	// Build final query
+	query := fmt.Sprintf(`
+		SELECT id, tournament_id, scorer_id, handicap, course_name
+		FROM scorecard %s %s
+		LIMIT $%d OFFSET $%d`,
+		whereClause, orderClause, argIndex, argIndex+1)
+
+	args = append(args, limitValue, offsetValue)
+
+	// Execute query
+	rows, err := r.DB.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to query scorecards: %w", err)
+	}
+
 	var scorecards []*model.Scorecard
 	var id uuid.UUID
 	var tournamentID uuid.UUID
 	var playerID uuid.UUID
 	var handicap int32
 	var course_name string
-	rows, err := r.DB.Query(ctx,
-		"select id, tournament_id, scorer_id, handicap, course_name from scorecard",
-	)
+
 	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name}, func() error {
-		fmt.Fprintf(os.Stderr, "Got: %v\n", id)
 		scorecards = append(scorecards, &model.Scorecard{
 			ID:           id,
 			TournamentID: tournamentID,
@@ -210,52 +600,12 @@ func (r *queryResolver) Scorecards(ctx context.Context) ([]*model.Scorecard, err
 		})
 		return nil
 	})
+
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		return nil, fmt.Errorf("Failed to query the database for scorecards: %w", err)
+		return nil, fmt.Errorf("Failed to fetch scorecards from query: %w", err)
 	}
 
 	return scorecards, nil
-}
-
-// Courses is the resolver for the courses field.
-func (r *queryResolver) Courses(ctx context.Context) ([]*model.Course, error) {
-	var courses []*model.Course
-	var name string
-	var slope int32
-	var course_rating float64
-	var nr_holes int32
-	rows, err := r.DB.Query(ctx, "select name, slope, course_rating, nr_holes from course")
-	_, err = pgx.ForEachRow(rows, []any{&name, &slope, &course_rating, &nr_holes}, func() error {
-		courses = append(courses, &model.Course{Name: name, Slope: slope, CourseRating: course_rating, NrHoles: nr_holes})
-		return nil
-	})
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		return nil, fmt.Errorf("Failed to query the database for courses: %w", err)
-	}
-
-	return courses, nil
-}
-
-// Tournaments is the resolver for the tournaments field.
-func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
-	var tournaments []*model.Tournament
-	var id uuid.UUID
-	var name string
-	var year time.Time
-	rows, err := r.DB.Query(ctx, "select id, name, year from tournament")
-	_, err = pgx.ForEachRow(rows, []any{&id, &name, &year}, func() error {
-		fmt.Fprintf(os.Stderr, "Got: %v", id)
-		tournaments = append(tournaments, &model.Tournament{ID: id, Name: name, Year: year})
-		return nil
-	})
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		return nil, fmt.Errorf("Failed to query the database for tournaments: %w", err)
-	}
-
-	return tournaments, nil
 }
 
 // Player is the resolver for the player field.
