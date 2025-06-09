@@ -74,7 +74,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Courses     func(childComplexity int) int
-		Players     func(childComplexity int) int
+		Players     func(childComplexity int, limit *int32, offset *int32, orderBy *model.PlayersOrderBy, condition *model.PlayerCondition) int
 		Scorecards  func(childComplexity int) int
 		Teams       func(childComplexity int) int
 		Tournaments func(childComplexity int) int
@@ -230,7 +230,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Query.Players(childComplexity), true
+		args, err := ec.field_Query_players_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Players(childComplexity, args["limit"].(*int32), args["offset"].(*int32), args["orderBy"].(*model.PlayersOrderBy), args["condition"].(*model.PlayerCondition)), true
 
 	case "Query.scorecards":
 		if e.complexity.Query.Scorecards == nil {
@@ -353,6 +358,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputNewPlayer,
+		ec.unmarshalInputPlayerCondition,
 	)
 	first := true
 
