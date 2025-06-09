@@ -21,7 +21,7 @@ func (r *courseResolver) Holes(ctx context.Context, obj *model.Course) ([]*model
 	var hole_nr int32
 	var index int32
 	var par int32
-	rows, err := r.DB.Query(ctx, "select hole_nr, hole_index, par from course_hole where course_name=$1", obj.Name)
+	rows, err := r.DB.Query(ctx, "select hole_nr, hole_index, par from hole where course_name=$1", obj.Name)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to query the database for players (%s): %w", obj.Name, err)
 	}
