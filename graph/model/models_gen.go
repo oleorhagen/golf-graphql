@@ -20,6 +20,14 @@ type Course struct {
 	Holes        []*Hole `json:"holes,omitempty"`
 }
 
+type CourseCondition struct {
+	Name             *string `json:"name,omitempty"`
+	Slope            *int32  `json:"slope,omitempty"`
+	SlopeGreaterThan *int32  `json:"slopeGreaterThan,omitempty"`
+	SlopeLessThan    *int32  `json:"slopeLessThan,omitempty"`
+	NrHoles          *int32  `json:"nrHoles,omitempty"`
+}
+
 type Hole struct {
 	Nr    int32 `json:"nr"`
 	Index int32 `json:"index"`
@@ -50,6 +58,15 @@ type PlayerCondition struct {
 type Query struct {
 }
 
+type ScorecardCondition struct {
+	Handicap            *int32     `json:"handicap,omitempty"`
+	HandicapGreaterThan *int32     `json:"handicapGreaterThan,omitempty"`
+	HandicapLessThan    *int32     `json:"handicapLessThan,omitempty"`
+	CourseName          *string    `json:"courseName,omitempty"`
+	TournamentID        *uuid.UUID `json:"tournamentId,omitempty"`
+	PlayerID            *uuid.UUID `json:"playerId,omitempty"`
+}
+
 type Team struct {
 	ID         uuid.UUID    `json:"id"`
 	Name       string       `json:"name"`
@@ -58,10 +75,89 @@ type Team struct {
 	Players    []*Player    `json:"players,omitempty"`
 }
 
+type TeamCondition struct {
+	Name                *string `json:"name,omitempty"`
+	Handicap            *int32  `json:"handicap,omitempty"`
+	HandicapGreaterThan *int32  `json:"handicapGreaterThan,omitempty"`
+	HandicapLessThan    *int32  `json:"handicapLessThan,omitempty"`
+}
+
 type Tournament struct {
 	ID   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
 	Year time.Time `json:"year"`
+}
+
+type TournamentCondition struct {
+	Name *string    `json:"name,omitempty"`
+	Year *time.Time `json:"year,omitempty"`
+}
+
+type CoursesOrderBy string
+
+const (
+	CoursesOrderByNameAsc          CoursesOrderBy = "NAME_ASC"
+	CoursesOrderByNameDesc         CoursesOrderBy = "NAME_DESC"
+	CoursesOrderBySlopeAsc         CoursesOrderBy = "SLOPE_ASC"
+	CoursesOrderBySlopeDesc        CoursesOrderBy = "SLOPE_DESC"
+	CoursesOrderByCourseRatingAsc  CoursesOrderBy = "COURSE_RATING_ASC"
+	CoursesOrderByCourseRatingDesc CoursesOrderBy = "COURSE_RATING_DESC"
+	CoursesOrderByNrHolesAsc       CoursesOrderBy = "NR_HOLES_ASC"
+	CoursesOrderByNrHolesDesc      CoursesOrderBy = "NR_HOLES_DESC"
+)
+
+var AllCoursesOrderBy = []CoursesOrderBy{
+	CoursesOrderByNameAsc,
+	CoursesOrderByNameDesc,
+	CoursesOrderBySlopeAsc,
+	CoursesOrderBySlopeDesc,
+	CoursesOrderByCourseRatingAsc,
+	CoursesOrderByCourseRatingDesc,
+	CoursesOrderByNrHolesAsc,
+	CoursesOrderByNrHolesDesc,
+}
+
+func (e CoursesOrderBy) IsValid() bool {
+	switch e {
+	case CoursesOrderByNameAsc, CoursesOrderByNameDesc, CoursesOrderBySlopeAsc, CoursesOrderBySlopeDesc, CoursesOrderByCourseRatingAsc, CoursesOrderByCourseRatingDesc, CoursesOrderByNrHolesAsc, CoursesOrderByNrHolesDesc:
+		return true
+	}
+	return false
+}
+
+func (e CoursesOrderBy) String() string {
+	return string(e)
+}
+
+func (e *CoursesOrderBy) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CoursesOrderBy(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CoursesOrderBy", str)
+	}
+	return nil
+}
+
+func (e CoursesOrderBy) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CoursesOrderBy) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CoursesOrderBy) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
 }
 
 type PlayersOrderBy string
@@ -122,6 +218,195 @@ func (e *PlayersOrderBy) UnmarshalJSON(b []byte) error {
 }
 
 func (e PlayersOrderBy) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ScorecardsOrderBy string
+
+const (
+	ScorecardsOrderByHandicapAsc    ScorecardsOrderBy = "HANDICAP_ASC"
+	ScorecardsOrderByHandicapDesc   ScorecardsOrderBy = "HANDICAP_DESC"
+	ScorecardsOrderByCourseNameAsc  ScorecardsOrderBy = "COURSE_NAME_ASC"
+	ScorecardsOrderByCourseNameDesc ScorecardsOrderBy = "COURSE_NAME_DESC"
+	ScorecardsOrderByIDAsc          ScorecardsOrderBy = "ID_ASC"
+	ScorecardsOrderByIDDesc         ScorecardsOrderBy = "ID_DESC"
+)
+
+var AllScorecardsOrderBy = []ScorecardsOrderBy{
+	ScorecardsOrderByHandicapAsc,
+	ScorecardsOrderByHandicapDesc,
+	ScorecardsOrderByCourseNameAsc,
+	ScorecardsOrderByCourseNameDesc,
+	ScorecardsOrderByIDAsc,
+	ScorecardsOrderByIDDesc,
+}
+
+func (e ScorecardsOrderBy) IsValid() bool {
+	switch e {
+	case ScorecardsOrderByHandicapAsc, ScorecardsOrderByHandicapDesc, ScorecardsOrderByCourseNameAsc, ScorecardsOrderByCourseNameDesc, ScorecardsOrderByIDAsc, ScorecardsOrderByIDDesc:
+		return true
+	}
+	return false
+}
+
+func (e ScorecardsOrderBy) String() string {
+	return string(e)
+}
+
+func (e *ScorecardsOrderBy) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ScorecardsOrderBy(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ScorecardsOrderBy", str)
+	}
+	return nil
+}
+
+func (e ScorecardsOrderBy) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ScorecardsOrderBy) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ScorecardsOrderBy) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type TeamsOrderBy string
+
+const (
+	TeamsOrderByNameAsc      TeamsOrderBy = "NAME_ASC"
+	TeamsOrderByNameDesc     TeamsOrderBy = "NAME_DESC"
+	TeamsOrderByHandicapAsc  TeamsOrderBy = "HANDICAP_ASC"
+	TeamsOrderByHandicapDesc TeamsOrderBy = "HANDICAP_DESC"
+	TeamsOrderByIDAsc        TeamsOrderBy = "ID_ASC"
+	TeamsOrderByIDDesc       TeamsOrderBy = "ID_DESC"
+)
+
+var AllTeamsOrderBy = []TeamsOrderBy{
+	TeamsOrderByNameAsc,
+	TeamsOrderByNameDesc,
+	TeamsOrderByHandicapAsc,
+	TeamsOrderByHandicapDesc,
+	TeamsOrderByIDAsc,
+	TeamsOrderByIDDesc,
+}
+
+func (e TeamsOrderBy) IsValid() bool {
+	switch e {
+	case TeamsOrderByNameAsc, TeamsOrderByNameDesc, TeamsOrderByHandicapAsc, TeamsOrderByHandicapDesc, TeamsOrderByIDAsc, TeamsOrderByIDDesc:
+		return true
+	}
+	return false
+}
+
+func (e TeamsOrderBy) String() string {
+	return string(e)
+}
+
+func (e *TeamsOrderBy) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TeamsOrderBy(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TeamsOrderBy", str)
+	}
+	return nil
+}
+
+func (e TeamsOrderBy) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TeamsOrderBy) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TeamsOrderBy) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type TournamentsOrderBy string
+
+const (
+	TournamentsOrderByNameAsc  TournamentsOrderBy = "NAME_ASC"
+	TournamentsOrderByNameDesc TournamentsOrderBy = "NAME_DESC"
+	TournamentsOrderByYearAsc  TournamentsOrderBy = "YEAR_ASC"
+	TournamentsOrderByYearDesc TournamentsOrderBy = "YEAR_DESC"
+	TournamentsOrderByIDAsc    TournamentsOrderBy = "ID_ASC"
+	TournamentsOrderByIDDesc   TournamentsOrderBy = "ID_DESC"
+)
+
+var AllTournamentsOrderBy = []TournamentsOrderBy{
+	TournamentsOrderByNameAsc,
+	TournamentsOrderByNameDesc,
+	TournamentsOrderByYearAsc,
+	TournamentsOrderByYearDesc,
+	TournamentsOrderByIDAsc,
+	TournamentsOrderByIDDesc,
+}
+
+func (e TournamentsOrderBy) IsValid() bool {
+	switch e {
+	case TournamentsOrderByNameAsc, TournamentsOrderByNameDesc, TournamentsOrderByYearAsc, TournamentsOrderByYearDesc, TournamentsOrderByIDAsc, TournamentsOrderByIDDesc:
+		return true
+	}
+	return false
+}
+
+func (e TournamentsOrderBy) String() string {
+	return string(e)
+}
+
+func (e *TournamentsOrderBy) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TournamentsOrderBy(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TournamentsOrderBy", str)
+	}
+	return nil
+}
+
+func (e TournamentsOrderBy) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TournamentsOrderBy) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TournamentsOrderBy) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	e.MarshalGQL(&buf)
 	return buf.Bytes(), nil

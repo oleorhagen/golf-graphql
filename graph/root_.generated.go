@@ -73,11 +73,11 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Courses     func(childComplexity int) int
+		Courses     func(childComplexity int, limit *int32, offset *int32, orderBy *model.CoursesOrderBy, condition *model.CourseCondition) int
 		Players     func(childComplexity int, limit *int32, offset *int32, orderBy *model.PlayersOrderBy, condition *model.PlayerCondition) int
-		Scorecards  func(childComplexity int) int
-		Teams       func(childComplexity int) int
-		Tournaments func(childComplexity int) int
+		Scorecards  func(childComplexity int, limit *int32, offset *int32, orderBy *model.ScorecardsOrderBy, condition *model.ScorecardCondition) int
+		Teams       func(childComplexity int, limit *int32, offset *int32, orderBy *model.TeamsOrderBy, condition *model.TeamCondition) int
+		Tournaments func(childComplexity int, limit *int32, offset *int32, orderBy *model.TournamentsOrderBy, condition *model.TournamentCondition) int
 	}
 
 	Scorecard struct {
@@ -223,7 +223,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Query.Courses(childComplexity), true
+		args, err := ec.field_Query_courses_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Courses(childComplexity, args["limit"].(*int32), args["offset"].(*int32), args["orderBy"].(*model.CoursesOrderBy), args["condition"].(*model.CourseCondition)), true
 
 	case "Query.players":
 		if e.complexity.Query.Players == nil {
@@ -242,21 +247,36 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Query.Scorecards(childComplexity), true
+		args, err := ec.field_Query_scorecards_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Scorecards(childComplexity, args["limit"].(*int32), args["offset"].(*int32), args["orderBy"].(*model.ScorecardsOrderBy), args["condition"].(*model.ScorecardCondition)), true
 
 	case "Query.teams":
 		if e.complexity.Query.Teams == nil {
 			break
 		}
 
-		return e.complexity.Query.Teams(childComplexity), true
+		args, err := ec.field_Query_teams_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Teams(childComplexity, args["limit"].(*int32), args["offset"].(*int32), args["orderBy"].(*model.TeamsOrderBy), args["condition"].(*model.TeamCondition)), true
 
 	case "Query.tournaments":
 		if e.complexity.Query.Tournaments == nil {
 			break
 		}
 
-		return e.complexity.Query.Tournaments(childComplexity), true
+		args, err := ec.field_Query_tournaments_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Tournaments(childComplexity, args["limit"].(*int32), args["offset"].(*int32), args["orderBy"].(*model.TournamentsOrderBy), args["condition"].(*model.TournamentCondition)), true
 
 	case "Scorecard.course_name":
 		if e.complexity.Scorecard.CourseName == nil {
@@ -357,8 +377,12 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputCourseCondition,
 		ec.unmarshalInputNewPlayer,
 		ec.unmarshalInputPlayerCondition,
+		ec.unmarshalInputScorecardCondition,
+		ec.unmarshalInputTeamCondition,
+		ec.unmarshalInputTournamentCondition,
 	)
 	first := true
 
