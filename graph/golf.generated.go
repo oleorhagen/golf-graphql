@@ -39,6 +39,7 @@ type QueryResolver interface {
 type ScorecardResolver interface {
 	Course(ctx context.Context, obj *model.Scorecard, condition *model.CourseCondition) (*model.Course, error)
 	Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error)
+	Holes(ctx context.Context, obj *model.Scorecard) ([]*model.ScorecardHole, error)
 }
 type TeamResolver interface {
 	Scorecards(ctx context.Context, obj *model.Team) ([]*model.Scorecard, error)
@@ -1111,6 +1112,8 @@ func (ec *executionContext) fieldContext_Player_scorecards(_ context.Context, fi
 				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
 				return ec.fieldContext_Scorecard_player(ctx, field)
+			case "holes":
+				return ec.fieldContext_Scorecard_holes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Scorecard", field.Name)
 		},
@@ -1429,6 +1432,8 @@ func (ec *executionContext) fieldContext_Query_scorecards(ctx context.Context, f
 				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
 				return ec.fieldContext_Scorecard_player(ctx, field)
+			case "holes":
+				return ec.fieldContext_Scorecard_holes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Scorecard", field.Name)
 		},
@@ -1831,6 +1836,282 @@ func (ec *executionContext) fieldContext_Scorecard_player(_ context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Scorecard_holes(ctx context.Context, field graphql.CollectedField, obj *model.Scorecard) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Scorecard_holes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Scorecard().Holes(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.ScorecardHole)
+	fc.Result = res
+	return ec.marshalNScorecardHole2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardHoleᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Scorecard_holes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Scorecard",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nr":
+				return ec.fieldContext_ScorecardHole_nr(ctx, field)
+			case "index":
+				return ec.fieldContext_ScorecardHole_index(ctx, field)
+			case "par":
+				return ec.fieldContext_ScorecardHole_par(ctx, field)
+			case "strokes":
+				return ec.fieldContext_ScorecardHole_strokes(ctx, field)
+			case "extra_strokes":
+				return ec.fieldContext_ScorecardHole_extra_strokes(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ScorecardHole", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ScorecardHole_nr(ctx context.Context, field graphql.CollectedField, obj *model.ScorecardHole) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ScorecardHole_nr(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Nr, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ScorecardHole_nr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ScorecardHole",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ScorecardHole_index(ctx context.Context, field graphql.CollectedField, obj *model.ScorecardHole) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ScorecardHole_index(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Index, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ScorecardHole_index(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ScorecardHole",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ScorecardHole_par(ctx context.Context, field graphql.CollectedField, obj *model.ScorecardHole) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ScorecardHole_par(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Par, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ScorecardHole_par(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ScorecardHole",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ScorecardHole_strokes(ctx context.Context, field graphql.CollectedField, obj *model.ScorecardHole) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ScorecardHole_strokes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Strokes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ScorecardHole_strokes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ScorecardHole",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ScorecardHole_extra_strokes(ctx context.Context, field graphql.CollectedField, obj *model.ScorecardHole) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ScorecardHole_extra_strokes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExtraStrokes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ScorecardHole_extra_strokes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ScorecardHole",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Team_id(ctx context.Context, field graphql.CollectedField, obj *model.Team) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Team_id(ctx, field)
 	if err != nil {
@@ -2009,6 +2290,8 @@ func (ec *executionContext) fieldContext_Team_scorecards(_ context.Context, fiel
 				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
 				return ec.fieldContext_Scorecard_player(ctx, field)
+			case "holes":
+				return ec.fieldContext_Scorecard_holes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Scorecard", field.Name)
 		},
@@ -3003,6 +3286,101 @@ func (ec *executionContext) _Scorecard(ctx context.Context, sel ast.SelectionSet
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "holes":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Scorecard_holes(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var scorecardHoleImplementors = []string{"ScorecardHole"}
+
+func (ec *executionContext) _ScorecardHole(ctx context.Context, sel ast.SelectionSet, obj *model.ScorecardHole) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, scorecardHoleImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ScorecardHole")
+		case "nr":
+			out.Values[i] = ec._ScorecardHole_nr(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "index":
+			out.Values[i] = ec._ScorecardHole_index(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "par":
+			out.Values[i] = ec._ScorecardHole_par(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "strokes":
+			out.Values[i] = ec._ScorecardHole_strokes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "extra_strokes":
+			out.Values[i] = ec._ScorecardHole_extra_strokes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3377,6 +3755,60 @@ func (ec *executionContext) marshalNScorecard2ᚖgithubᚗcomᚋoleorhagenᚋgol
 		return graphql.Null
 	}
 	return ec._Scorecard(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNScorecardHole2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardHoleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ScorecardHole) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNScorecardHole2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardHole(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNScorecardHole2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardHole(ctx context.Context, sel ast.SelectionSet, v *model.ScorecardHole) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ScorecardHole(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNTeam2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐTeamᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Team) graphql.Marshaler {

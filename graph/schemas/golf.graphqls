@@ -19,6 +19,15 @@ type Scorecard {
   handicap: Int!
   course(condition: CourseCondition): Course!
   player: Player!
+  holes: [ScorecardHole!]!
+}
+
+type ScorecardHole {
+  nr: Int!
+  index: Int!
+  par: Int!
+  strokes: Int!
+  extra_strokes: Int!
 }
 
 type Course {

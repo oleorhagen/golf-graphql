@@ -83,9 +83,18 @@ type ComplexityRoot struct {
 	Scorecard struct {
 		Course       func(childComplexity int, condition *model.CourseCondition) int
 		Handicap     func(childComplexity int) int
+		Holes        func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Player       func(childComplexity int) int
 		TournamentID func(childComplexity int) int
+	}
+
+	ScorecardHole struct {
+		ExtraStrokes func(childComplexity int) int
+		Index        func(childComplexity int) int
+		Nr           func(childComplexity int) int
+		Par          func(childComplexity int) int
+		Strokes      func(childComplexity int) int
 	}
 
 	Team struct {
@@ -297,6 +306,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Scorecard.Handicap(childComplexity), true
 
+	case "Scorecard.holes":
+		if e.complexity.Scorecard.Holes == nil {
+			break
+		}
+
+		return e.complexity.Scorecard.Holes(childComplexity), true
+
 	case "Scorecard.id":
 		if e.complexity.Scorecard.ID == nil {
 			break
@@ -317,6 +333,41 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Scorecard.TournamentID(childComplexity), true
+
+	case "ScorecardHole.extra_strokes":
+		if e.complexity.ScorecardHole.ExtraStrokes == nil {
+			break
+		}
+
+		return e.complexity.ScorecardHole.ExtraStrokes(childComplexity), true
+
+	case "ScorecardHole.index":
+		if e.complexity.ScorecardHole.Index == nil {
+			break
+		}
+
+		return e.complexity.ScorecardHole.Index(childComplexity), true
+
+	case "ScorecardHole.nr":
+		if e.complexity.ScorecardHole.Nr == nil {
+			break
+		}
+
+		return e.complexity.ScorecardHole.Nr(childComplexity), true
+
+	case "ScorecardHole.par":
+		if e.complexity.ScorecardHole.Par == nil {
+			break
+		}
+
+		return e.complexity.ScorecardHole.Par(childComplexity), true
+
+	case "ScorecardHole.strokes":
+		if e.complexity.ScorecardHole.Strokes == nil {
+			break
+		}
+
+		return e.complexity.ScorecardHole.Strokes(childComplexity), true
 
 	case "Team.handicap":
 		if e.complexity.Team.Handicap == nil {

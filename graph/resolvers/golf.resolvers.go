@@ -676,6 +676,41 @@ func (r *scorecardResolver) Player(ctx context.Context, obj *model.Scorecard) (*
 	return &player, nil
 }
 
+// Holes is the resolver for the holes field.
+func (r *scorecardResolver) Holes(ctx context.Context, obj *model.Scorecard) ([]*model.ScorecardHole, error) {
+	var holes []*model.ScorecardHole
+
+	rows, err := r.DB.Query(ctx, `
+                select hole_nr, hole_index, par, extra_strokes
+                from course_hole
+                where id = $1
+                      AND
+                      course_name = $2
+		ORDER BY hole_nr`, obj.ID, obj.CourseName)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to query holes for scorecard (%s): %w", obj.ID, err)
+	}
+
+	var holeNr, index, par, extra_strokes int32
+	_, err = pgx.ForEachRow(rows, []any{&holeNr, &index, &par, &extra_strokes}, func() error {
+		holes = append(holes, &model.ScorecardHole{
+			Nr:           holeNr,
+			Index:        index,
+			Par:          par,
+			Strokes:      0, // TODO - Implement
+			ExtraStrokes: extra_strokes,
+		})
+		return nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to fetch holes for scorecard: %w", err)
+	}
+
+	return holes, nil
+}
+
 // Scorecards is the resolver for the scorecards field.
 func (r *teamResolver) Scorecards(ctx context.Context, obj *model.Team) ([]*model.Scorecard, error) {
 	var scorecards []*model.Scorecard
