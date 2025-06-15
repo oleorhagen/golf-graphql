@@ -652,6 +652,7 @@ func (r *scorecardResolver) Course(ctx context.Context, obj *model.Scorecard, co
 		Slope:        slope,
 		CourseRating: courseRating,
 		NrHoles:      nrHoles,
+		ScorecardID:  obj.ID, // Pass scorecard ID for hole resolution
 	}
 
 	return course, nil
@@ -681,10 +682,12 @@ func (r *scorecardCourseResolver) Holes(ctx context.Context, obj *model.Scorecar
 	var holes []*model.ScorecardHole
 
 	rows, err := r.DB.Query(ctx, `
-                select hole_nr, hole_index, par, extra_strokes
-                from course_hole
-                where course_name = $1
-		ORDER BY hole_nr`, obj.Name)
+                SELECT hole_nr, hole_index, par, extra_strokes
+                FROM course_hole
+                WHERE id = $1
+                     AND
+                      course_name = $2
+		ORDER BY hole_nr`, obj.ScorecardID, obj.Name)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to query holes for scorecard course (%s): %w", obj.Name, err)
@@ -790,45 +793,3 @@ type queryResolver struct{ *Resolver }
 type scorecardResolver struct{ *Resolver }
 type scorecardCourseResolver struct{ *Resolver }
 type teamResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *courseResolver) ScorecardHoles(ctx context.Context, obj *model.Course, scorecardID uuid.UUID) ([]*model.ScorecardHole, error) {
-	var holes []*model.ScorecardHole
-
-	rows, err := r.DB.Query(ctx, `
-                select hole_nr, hole_index, par, extra_strokes
-                from course_hole
-                where id = $1
-                      AND
-                      course_name = $2
-		ORDER BY hole_nr`, scorecardID, obj.Name)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to query holes for scorecard (%s): %w", scorecardID, err)
-	}
-
-	var holeNr, index, par, extra_strokes int32
-	_, err = pgx.ForEachRow(rows, []any{&holeNr, &index, &par, &extra_strokes}, func() error {
-		holes = append(holes, &model.ScorecardHole{
-			Nr:           holeNr,
-			Index:        index,
-			Par:          par,
-			Strokes:      0, // TODO - Implement
-			ExtraStrokes: extra_strokes,
-		})
-		return nil
-	})
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to fetch holes for scorecard: %w", err)
-	}
-
-	return holes, nil
-}
-*/
