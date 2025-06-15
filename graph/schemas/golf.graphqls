@@ -17,7 +17,7 @@ type Scorecard {
   id: ID!
   tournament_id: ID!
   handicap: Int!
-  course_name: String!
+  course: Course!
   player: Player!
 }
 
@@ -120,8 +120,6 @@ input TournamentCondition {
 enum ScorecardsOrderBy {
   HANDICAP_ASC
   HANDICAP_DESC
-  COURSE_NAME_ASC
-  COURSE_NAME_DESC
   ID_ASC
   ID_DESC
 }
@@ -131,7 +129,6 @@ input ScorecardCondition {
   handicap: Int
   handicapGreaterThan: Int
   handicapLessThan: Int
-  courseName: String
   tournamentId: ID
   playerId: ID
 }

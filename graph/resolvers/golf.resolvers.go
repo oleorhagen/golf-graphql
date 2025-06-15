@@ -511,11 +511,6 @@ func (r *queryResolver) Scorecards(ctx context.Context, limit *int32, offset *in
 			args = append(args, *condition.HandicapLessThan)
 			argIndex++
 		}
-		if condition.CourseName != nil {
-			whereClause += fmt.Sprintf(" AND course_name ILIKE $%d", argIndex)
-			args = append(args, "%"+*condition.CourseName+"%")
-			argIndex++
-		}
 		if condition.TournamentID != nil {
 			whereClause += fmt.Sprintf(" AND tournament_id = $%d", argIndex)
 			args = append(args, *condition.TournamentID)
@@ -536,10 +531,6 @@ func (r *queryResolver) Scorecards(ctx context.Context, limit *int32, offset *in
 			orderClause = "ORDER BY handicap ASC"
 		case model.ScorecardsOrderByHandicapDesc:
 			orderClause = "ORDER BY handicap DESC"
-		case model.ScorecardsOrderByCourseNameAsc:
-			orderClause = "ORDER BY course_name ASC"
-		case model.ScorecardsOrderByCourseNameDesc:
-			orderClause = "ORDER BY course_name DESC"
 		case model.ScorecardsOrderByIDAsc:
 			orderClause = "ORDER BY id ASC"
 		case model.ScorecardsOrderByIDDesc:
@@ -606,6 +597,28 @@ func (r *queryResolver) Scorecards(ctx context.Context, limit *int32, offset *in
 	}
 
 	return scorecards, nil
+}
+
+// Course is the resolver for the course field.
+func (r *scorecardResolver) Course(ctx context.Context, obj *model.Scorecard) (*model.Course, error) {
+	var name string
+	var slope int32
+	var courseRating float64
+	var nrHoles int32
+	
+	err := r.DB.QueryRow(ctx, "select name, slope, course_rating, nr_holes from course where name=$1", obj.CourseName).Scan(&name, &slope, &courseRating, &nrHoles)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to query the database for course (%s): %w", obj.CourseName, err)
+	}
+	
+	course := &model.Course{
+		Name:         name,
+		Slope:        slope,
+		CourseRating: courseRating,
+		NrHoles:      nrHoles,
+	}
+	
+	return course, nil
 }
 
 // Player is the resolver for the player field.
