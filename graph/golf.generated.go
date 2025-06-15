@@ -37,7 +37,7 @@ type QueryResolver interface {
 	Scorecards(ctx context.Context, limit *int32, offset *int32, orderBy *model.ScorecardsOrderBy, condition *model.ScorecardCondition) ([]*model.Scorecard, error)
 }
 type ScorecardResolver interface {
-	Course(ctx context.Context, obj *model.Scorecard) (*model.Course, error)
+	Course(ctx context.Context, obj *model.Scorecard, condition *model.CourseCondition) (*model.Course, error)
 	Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error)
 }
 type TeamResolver interface {
@@ -477,6 +477,29 @@ func (ec *executionContext) field_Query_tournaments_argsCondition(
 	}
 
 	var zeroVal *model.TournamentCondition
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Scorecard_course_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Scorecard_course_argsCondition(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["condition"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Scorecard_course_argsCondition(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.CourseCondition, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("condition"))
+	if tmp, ok := rawArgs["condition"]; ok {
+		return ec.unmarshalOCourseCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourseCondition(ctx, tmp)
+	}
+
+	var zeroVal *model.CourseCondition
 	return zeroVal, nil
 }
 
@@ -1701,7 +1724,7 @@ func (ec *executionContext) _Scorecard_course(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Scorecard().Course(rctx, obj)
+		return ec.resolvers.Scorecard().Course(rctx, obj, fc.Args["condition"].(*model.CourseCondition))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1718,7 +1741,7 @@ func (ec *executionContext) _Scorecard_course(ctx context.Context, field graphql
 	return ec.marshalNCourse2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourse(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Scorecard_course(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Scorecard_course(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Scorecard",
 		Field:      field,
@@ -1739,6 +1762,17 @@ func (ec *executionContext) fieldContext_Scorecard_course(_ context.Context, fie
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Scorecard_course_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }

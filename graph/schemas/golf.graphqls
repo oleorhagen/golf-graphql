@@ -17,7 +17,7 @@ type Scorecard {
   id: ID!
   tournament_id: ID!
   handicap: Int!
-  course: Course!
+  course(condition: CourseCondition): Course!
   player: Player!
 }
 
