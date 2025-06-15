@@ -81,7 +81,7 @@ type ComplexityRoot struct {
 	}
 
 	Scorecard struct {
-		CourseName   func(childComplexity int) int
+		Course       func(childComplexity int) int
 		Handicap     func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Player       func(childComplexity int) int
@@ -278,12 +278,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.Tournaments(childComplexity, args["limit"].(*int32), args["offset"].(*int32), args["orderBy"].(*model.TournamentsOrderBy), args["condition"].(*model.TournamentCondition)), true
 
-	case "Scorecard.course_name":
-		if e.complexity.Scorecard.CourseName == nil {
+	case "Scorecard.course":
+		if e.complexity.Scorecard.Course == nil {
 			break
 		}
 
-		return e.complexity.Scorecard.CourseName(childComplexity), true
+		return e.complexity.Scorecard.Course(childComplexity), true
 
 	case "Scorecard.handicap":
 		if e.complexity.Scorecard.Handicap == nil {

@@ -62,7 +62,6 @@ type ScorecardCondition struct {
 	Handicap            *int32     `json:"handicap,omitempty"`
 	HandicapGreaterThan *int32     `json:"handicapGreaterThan,omitempty"`
 	HandicapLessThan    *int32     `json:"handicapLessThan,omitempty"`
-	CourseName          *string    `json:"courseName,omitempty"`
 	TournamentID        *uuid.UUID `json:"tournamentId,omitempty"`
 	PlayerID            *uuid.UUID `json:"playerId,omitempty"`
 }
@@ -226,26 +225,22 @@ func (e PlayersOrderBy) MarshalJSON() ([]byte, error) {
 type ScorecardsOrderBy string
 
 const (
-	ScorecardsOrderByHandicapAsc    ScorecardsOrderBy = "HANDICAP_ASC"
-	ScorecardsOrderByHandicapDesc   ScorecardsOrderBy = "HANDICAP_DESC"
-	ScorecardsOrderByCourseNameAsc  ScorecardsOrderBy = "COURSE_NAME_ASC"
-	ScorecardsOrderByCourseNameDesc ScorecardsOrderBy = "COURSE_NAME_DESC"
-	ScorecardsOrderByIDAsc          ScorecardsOrderBy = "ID_ASC"
-	ScorecardsOrderByIDDesc         ScorecardsOrderBy = "ID_DESC"
+	ScorecardsOrderByHandicapAsc  ScorecardsOrderBy = "HANDICAP_ASC"
+	ScorecardsOrderByHandicapDesc ScorecardsOrderBy = "HANDICAP_DESC"
+	ScorecardsOrderByIDAsc        ScorecardsOrderBy = "ID_ASC"
+	ScorecardsOrderByIDDesc       ScorecardsOrderBy = "ID_DESC"
 )
 
 var AllScorecardsOrderBy = []ScorecardsOrderBy{
 	ScorecardsOrderByHandicapAsc,
 	ScorecardsOrderByHandicapDesc,
-	ScorecardsOrderByCourseNameAsc,
-	ScorecardsOrderByCourseNameDesc,
 	ScorecardsOrderByIDAsc,
 	ScorecardsOrderByIDDesc,
 }
 
 func (e ScorecardsOrderBy) IsValid() bool {
 	switch e {
-	case ScorecardsOrderByHandicapAsc, ScorecardsOrderByHandicapDesc, ScorecardsOrderByCourseNameAsc, ScorecardsOrderByCourseNameDesc, ScorecardsOrderByIDAsc, ScorecardsOrderByIDDesc:
+	case ScorecardsOrderByHandicapAsc, ScorecardsOrderByHandicapDesc, ScorecardsOrderByIDAsc, ScorecardsOrderByIDDesc:
 		return true
 	}
 	return false

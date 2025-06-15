@@ -37,6 +37,7 @@ type QueryResolver interface {
 	Scorecards(ctx context.Context, limit *int32, offset *int32, orderBy *model.ScorecardsOrderBy, condition *model.ScorecardCondition) ([]*model.Scorecard, error)
 }
 type ScorecardResolver interface {
+	Course(ctx context.Context, obj *model.Scorecard) (*model.Course, error)
 	Player(ctx context.Context, obj *model.Scorecard) (*model.Player, error)
 }
 type TeamResolver interface {
@@ -1083,8 +1084,8 @@ func (ec *executionContext) fieldContext_Player_scorecards(_ context.Context, fi
 				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
 			case "handicap":
 				return ec.fieldContext_Scorecard_handicap(ctx, field)
-			case "course_name":
-				return ec.fieldContext_Scorecard_course_name(ctx, field)
+			case "course":
+				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
 				return ec.fieldContext_Scorecard_player(ctx, field)
 			}
@@ -1401,8 +1402,8 @@ func (ec *executionContext) fieldContext_Query_scorecards(ctx context.Context, f
 				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
 			case "handicap":
 				return ec.fieldContext_Scorecard_handicap(ctx, field)
-			case "course_name":
-				return ec.fieldContext_Scorecard_course_name(ctx, field)
+			case "course":
+				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
 				return ec.fieldContext_Scorecard_player(ctx, field)
 			}
@@ -1686,8 +1687,8 @@ func (ec *executionContext) fieldContext_Scorecard_handicap(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Scorecard_course_name(ctx context.Context, field graphql.CollectedField, obj *model.Scorecard) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Scorecard_course_name(ctx, field)
+func (ec *executionContext) _Scorecard_course(ctx context.Context, field graphql.CollectedField, obj *model.Scorecard) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Scorecard_course(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1700,7 +1701,7 @@ func (ec *executionContext) _Scorecard_course_name(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CourseName, nil
+		return ec.resolvers.Scorecard().Course(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1712,19 +1713,31 @@ func (ec *executionContext) _Scorecard_course_name(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.Course)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNCourse2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourse(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Scorecard_course_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Scorecard_course(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Scorecard",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_Course_name(ctx, field)
+			case "slope":
+				return ec.fieldContext_Course_slope(ctx, field)
+			case "course_rating":
+				return ec.fieldContext_Course_course_rating(ctx, field)
+			case "nr_holes":
+				return ec.fieldContext_Course_nr_holes(ctx, field)
+			case "holes":
+				return ec.fieldContext_Course_holes(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
 		},
 	}
 	return fc, nil
@@ -1958,8 +1971,8 @@ func (ec *executionContext) fieldContext_Team_scorecards(_ context.Context, fiel
 				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
 			case "handicap":
 				return ec.fieldContext_Scorecard_handicap(ctx, field)
-			case "course_name":
-				return ec.fieldContext_Scorecard_course_name(ctx, field)
+			case "course":
+				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
 				return ec.fieldContext_Scorecard_player(ctx, field)
 			}
@@ -2293,7 +2306,7 @@ func (ec *executionContext) unmarshalInputScorecardCondition(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"handicap", "handicapGreaterThan", "handicapLessThan", "courseName", "tournamentId", "playerId"}
+	fieldsInOrder := [...]string{"handicap", "handicapGreaterThan", "handicapLessThan", "tournamentId", "playerId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2321,13 +2334,6 @@ func (ec *executionContext) unmarshalInputScorecardCondition(ctx context.Context
 				return it, err
 			}
 			it.HandicapLessThan = data
-		case "courseName":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("courseName"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.CourseName = data
 		case "tournamentId":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tournamentId"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
@@ -2891,11 +2897,42 @@ func (ec *executionContext) _Scorecard(ctx context.Context, sel ast.SelectionSet
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "course_name":
-			out.Values[i] = ec._Scorecard_course_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+		case "course":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Scorecard_course(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "player":
 			field := field
 
@@ -3122,6 +3159,10 @@ func (ec *executionContext) _Tournament(ctx context.Context, sel ast.SelectionSe
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
+
+func (ec *executionContext) marshalNCourse2githubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourse(ctx context.Context, sel ast.SelectionSet, v model.Course) graphql.Marshaler {
+	return ec._Course(ctx, sel, &v)
+}
 
 func (ec *executionContext) marshalNCourse2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Course) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
