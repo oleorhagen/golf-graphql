@@ -600,24 +600,60 @@ func (r *queryResolver) Scorecards(ctx context.Context, limit *int32, offset *in
 }
 
 // Course is the resolver for the course field.
-func (r *scorecardResolver) Course(ctx context.Context, obj *model.Scorecard) (*model.Course, error) {
+func (r *scorecardResolver) Course(ctx context.Context, obj *model.Scorecard, condition *model.CourseCondition) (*model.Course, error) {
+	// Build WHERE clause
+	whereClause := "WHERE name=$1"
+	args := []interface{}{obj.CourseName}
+	argIndex := 2
+
+	// Apply filtering conditions
+	if condition != nil {
+		if condition.Name != nil {
+			whereClause += fmt.Sprintf(" AND name ILIKE $%d", argIndex)
+			args = append(args, "%"+*condition.Name+"%")
+			argIndex++
+		}
+		if condition.Slope != nil {
+			whereClause += fmt.Sprintf(" AND slope = $%d", argIndex)
+			args = append(args, *condition.Slope)
+			argIndex++
+		}
+		if condition.SlopeGreaterThan != nil {
+			whereClause += fmt.Sprintf(" AND slope > $%d", argIndex)
+			args = append(args, *condition.SlopeGreaterThan)
+			argIndex++
+		}
+		if condition.SlopeLessThan != nil {
+			whereClause += fmt.Sprintf(" AND slope < $%d", argIndex)
+			args = append(args, *condition.SlopeLessThan)
+			argIndex++
+		}
+		if condition.NrHoles != nil {
+			whereClause += fmt.Sprintf(" AND nr_holes = $%d", argIndex)
+			args = append(args, *condition.NrHoles)
+			argIndex++
+		}
+	}
+
+	query := fmt.Sprintf("SELECT name, slope, course_rating, nr_holes FROM course %s", whereClause)
+
 	var name string
 	var slope int32
 	var courseRating float64
 	var nrHoles int32
-	
-	err := r.DB.QueryRow(ctx, "select name, slope, course_rating, nr_holes from course where name=$1", obj.CourseName).Scan(&name, &slope, &courseRating, &nrHoles)
+
+	err := r.DB.QueryRow(ctx, query, args...).Scan(&name, &slope, &courseRating, &nrHoles)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to query the database for course (%s): %w", obj.CourseName, err)
 	}
-	
+
 	course := &model.Course{
 		Name:         name,
 		Slope:        slope,
 		CourseRating: courseRating,
 		NrHoles:      nrHoles,
 	}
-	
+
 	return course, nil
 }
 
