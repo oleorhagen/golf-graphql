@@ -183,6 +183,7 @@ models:
         resolver: true
 
   ScorecardCourse:
+    model: github.com/oleorhagen/golf-graphql/graph/model.ScorecardCourse
     fields:
       holes:
         resolver: true

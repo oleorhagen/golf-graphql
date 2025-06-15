@@ -66,14 +66,6 @@ type ScorecardCondition struct {
 	PlayerID            *uuid.UUID `json:"playerId,omitempty"`
 }
 
-type ScorecardCourse struct {
-	Name         string           `json:"name"`
-	Slope        int32            `json:"slope"`
-	CourseRating float64          `json:"course_rating"`
-	NrHoles      int32            `json:"nr_holes"`
-	Holes        []*ScorecardHole `json:"holes"`
-}
-
 type ScorecardHole struct {
 	Nr           int32 `json:"nr"`
 	Index        int32 `json:"index"`
