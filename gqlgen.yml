@@ -182,4 +182,9 @@ models:
       holes:
         resolver: true
 
+  ScorecardCourse:
+    fields:
+      holes:
+        resolver: true
+
 

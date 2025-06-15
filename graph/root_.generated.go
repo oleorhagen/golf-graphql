@@ -40,6 +40,7 @@ type ResolverRoot interface {
 	Player() PlayerResolver
 	Query() QueryResolver
 	Scorecard() ScorecardResolver
+	ScorecardCourse() ScorecardCourseResolver
 	Team() TeamResolver
 }
 
@@ -83,10 +84,17 @@ type ComplexityRoot struct {
 	Scorecard struct {
 		Course       func(childComplexity int, condition *model.CourseCondition) int
 		Handicap     func(childComplexity int) int
-		Holes        func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Player       func(childComplexity int) int
 		TournamentID func(childComplexity int) int
+	}
+
+	ScorecardCourse struct {
+		CourseRating func(childComplexity int) int
+		Holes        func(childComplexity int) int
+		Name         func(childComplexity int) int
+		NrHoles      func(childComplexity int) int
+		Slope        func(childComplexity int) int
 	}
 
 	ScorecardHole struct {
@@ -306,13 +314,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Scorecard.Handicap(childComplexity), true
 
-	case "Scorecard.holes":
-		if e.complexity.Scorecard.Holes == nil {
-			break
-		}
-
-		return e.complexity.Scorecard.Holes(childComplexity), true
-
 	case "Scorecard.id":
 		if e.complexity.Scorecard.ID == nil {
 			break
@@ -333,6 +334,41 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Scorecard.TournamentID(childComplexity), true
+
+	case "ScorecardCourse.course_rating":
+		if e.complexity.ScorecardCourse.CourseRating == nil {
+			break
+		}
+
+		return e.complexity.ScorecardCourse.CourseRating(childComplexity), true
+
+	case "ScorecardCourse.holes":
+		if e.complexity.ScorecardCourse.Holes == nil {
+			break
+		}
+
+		return e.complexity.ScorecardCourse.Holes(childComplexity), true
+
+	case "ScorecardCourse.name":
+		if e.complexity.ScorecardCourse.Name == nil {
+			break
+		}
+
+		return e.complexity.ScorecardCourse.Name(childComplexity), true
+
+	case "ScorecardCourse.nr_holes":
+		if e.complexity.ScorecardCourse.NrHoles == nil {
+			break
+		}
+
+		return e.complexity.ScorecardCourse.NrHoles(childComplexity), true
+
+	case "ScorecardCourse.slope":
+		if e.complexity.ScorecardCourse.Slope == nil {
+			break
+		}
+
+		return e.complexity.ScorecardCourse.Slope(childComplexity), true
 
 	case "ScorecardHole.extra_strokes":
 		if e.complexity.ScorecardHole.ExtraStrokes == nil {
