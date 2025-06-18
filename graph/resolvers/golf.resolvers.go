@@ -735,24 +735,34 @@ func (r *scorecardCourseResolver) Holes(ctx context.Context, obj *model.Scorecar
 	var holes []*model.ScorecardHole
 
 	rows, err := r.DB.Query(ctx, `
-		SELECT hole_nr, hole_index, par, extra_strokes
-		FROM course_hole
-		WHERE id = $1
-		     AND
-		      course_name = $2
-		ORDER BY hole_nr`, obj.ScorecardID, obj.Name)
+        SELECT
+			ch.hole_nr,
+			ch.hole_index,
+			ch.par,
+			ch.extra_strokes,
+			COALESCE(hs.strokes, 0) as strokes
+		FROM course_hole ch
+		LEFT JOIN physical.hole_score hs ON (
+			ch.hole_nr = hs.hole_nr
+			AND ch.course_name = hs.course_name
+			AND hs.scorecard_id = $1
+      AND ch.player_id = hs.scorer_id
+		)
+		WHERE ch.course_name = $2
+		ORDER BY ch.hole_nr
+`, obj.ScorecardID, obj.Name)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to query holes for scorecard course (%s): %w", obj.Name, err)
 	}
 
-	var holeNr, index, par, extra_strokes int32
-	_, err = pgx.ForEachRow(rows, []any{&holeNr, &index, &par, &extra_strokes}, func() error {
+	var holeNr, index, par, extra_strokes, strokes int32
+	_, err = pgx.ForEachRow(rows, []any{&holeNr, &index, &par, &extra_strokes, &strokes}, func() error {
 		holes = append(holes, &model.ScorecardHole{
 			Nr:           holeNr,
 			Index:        index,
 			Par:          par,
-			Strokes:      0, // TODO - Implement
+			Strokes:      strokes,
 			ExtraStrokes: extra_strokes,
 		})
 		return nil
