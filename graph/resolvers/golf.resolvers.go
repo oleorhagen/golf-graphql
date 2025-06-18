@@ -51,6 +51,59 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 	return player, nil
 }
 
+// UpdateScorecard is the resolver for the updateScorecard field.
+func (r *mutationResolver) UpdateScorecard(ctx context.Context, input model.UpdateScorecard) (*model.Scorecard, error) {
+	tx, err := r.DB.Begin(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	// Update hole strokes - need to add a strokes column to course_hole table first
+	// For now, this will store in extra_strokes column temporarily
+	for _, hole := range input.Holes {
+		_, err = tx.Exec(ctx, `
+insert into physical.hole_score (course_name, scorer_id, hole_nr, scorecard_id, strokes)
+values (
+    (select course_name from scorecard where id = $1),
+    (select scorer_id from scorecard where id = $1),
+    $2, -- Hole Nr
+    $1,
+    $3 -- 3 Strokes
+)`, input.ID, hole.Nr, hole.Strokes)
+		if err != nil {
+			return nil, fmt.Errorf("failed to update strokes for hole %d: %w", hole.Nr, err)
+		}
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	// Fetch and return the updated scorecard
+	var id uuid.UUID
+	var tournamentID uuid.UUID
+	var playerID uuid.UUID
+	var handicap int32
+	var courseName string
+
+	err = r.DB.QueryRow(ctx,
+		"SELECT id, tournament_id, scorer_id, handicap, course_name FROM scorecard WHERE id = $1",
+		input.ID).Scan(&id, &tournamentID, &playerID, &handicap, &courseName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch updated scorecard: %w", err)
+	}
+
+	return &model.Scorecard{
+		ID:           id,
+		TournamentID: tournamentID,
+		Handicap:     handicap,
+		CourseName:   courseName,
+		PlayerID:     playerID,
+	}, nil
+}
+
 // Scorecards is the resolver for the scorecards field.
 func (r *playerResolver) Scorecards(ctx context.Context, obj *model.Player) ([]*model.Scorecard, error) {
 	scorecards, err := getScorecards(r, ctx, obj.ID)
@@ -682,11 +735,11 @@ func (r *scorecardCourseResolver) Holes(ctx context.Context, obj *model.Scorecar
 	var holes []*model.ScorecardHole
 
 	rows, err := r.DB.Query(ctx, `
-                SELECT hole_nr, hole_index, par, extra_strokes
-                FROM course_hole
-                WHERE id = $1
-                     AND
-                      course_name = $2
+		SELECT hole_nr, hole_index, par, extra_strokes
+		FROM course_hole
+		WHERE id = $1
+		     AND
+		      course_name = $2
 		ORDER BY hole_nr`, obj.ScorecardID, obj.Name)
 
 	if err != nil {

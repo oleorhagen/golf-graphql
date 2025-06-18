@@ -190,6 +190,17 @@ input NewPlayer {
   name: String!
 }
 
+input UpdateScorecardHole {
+  nr: Int!
+  strokes: Int!
+}
+
+input UpdateScorecard {
+  id: ID!
+  holes: [UpdateScorecardHole!]!
+}
+
 type Mutation {
   createPlayer(input: NewPlayer!): Player!
+  updateScorecard(input: UpdateScorecard!): Scorecard!
 }
