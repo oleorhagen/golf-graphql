@@ -100,6 +100,16 @@ type TournamentCondition struct {
 	Year *time.Time `json:"year,omitempty"`
 }
 
+type UpdateScorecard struct {
+	ID    uuid.UUID              `json:"id"`
+	Holes []*UpdateScorecardHole `json:"holes"`
+}
+
+type UpdateScorecardHole struct {
+	Nr      int32 `json:"nr"`
+	Strokes int32 `json:"strokes"`
+}
+
 type CoursesOrderBy string
 
 const (

@@ -63,7 +63,8 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreatePlayer func(childComplexity int, input model.NewPlayer) int
+		CreatePlayer    func(childComplexity int, input model.NewPlayer) int
+		UpdateScorecard func(childComplexity int, input model.UpdateScorecard) int
 	}
 
 	Player struct {
@@ -206,6 +207,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.CreatePlayer(childComplexity, args["input"].(model.NewPlayer)), true
+
+	case "Mutation.updateScorecard":
+		if e.complexity.Mutation.UpdateScorecard == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateScorecard_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateScorecard(childComplexity, args["input"].(model.UpdateScorecard)), true
 
 	case "Player.handicap":
 		if e.complexity.Player.Handicap == nil {
@@ -475,6 +488,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputScorecardCondition,
 		ec.unmarshalInputTeamCondition,
 		ec.unmarshalInputTournamentCondition,
+		ec.unmarshalInputUpdateScorecard,
+		ec.unmarshalInputUpdateScorecardHole,
 	)
 	first := true
 

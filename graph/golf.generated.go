@@ -25,6 +25,7 @@ type CourseResolver interface {
 }
 type MutationResolver interface {
 	CreatePlayer(ctx context.Context, input model.NewPlayer) (*model.Player, error)
+	UpdateScorecard(ctx context.Context, input model.UpdateScorecard) (*model.Scorecard, error)
 }
 type PlayerResolver interface {
 	Scorecards(ctx context.Context, obj *model.Player) ([]*model.Scorecard, error)
@@ -72,6 +73,29 @@ func (ec *executionContext) field_Mutation_createPlayer_argsInput(
 	}
 
 	var zeroVal model.NewPlayer
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateScorecard_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_updateScorecard_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateScorecard_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.UpdateScorecard, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateScorecard2githubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐUpdateScorecard(ctx, tmp)
+	}
+
+	var zeroVal model.UpdateScorecard
 	return zeroVal, nil
 }
 
@@ -930,6 +954,73 @@ func (ec *executionContext) fieldContext_Mutation_createPlayer(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createPlayer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateScorecard(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateScorecard(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateScorecard(rctx, fc.Args["input"].(model.UpdateScorecard))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Scorecard)
+	fc.Result = res
+	return ec.marshalNScorecard2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecard(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateScorecard(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Scorecard_id(ctx, field)
+			case "tournament_id":
+				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
+			case "handicap":
+				return ec.fieldContext_Scorecard_handicap(ctx, field)
+			case "course":
+				return ec.fieldContext_Scorecard_course(ctx, field)
+			case "player":
+				return ec.fieldContext_Scorecard_player(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Scorecard", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateScorecard_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2925,6 +3016,74 @@ func (ec *executionContext) unmarshalInputTournamentCondition(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateScorecard(ctx context.Context, obj any) (model.UpdateScorecard, error) {
+	var it model.UpdateScorecard
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "holes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "holes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("holes"))
+			data, err := ec.unmarshalNUpdateScorecardHole2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐUpdateScorecardHoleᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Holes = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateScorecardHole(ctx context.Context, obj any) (model.UpdateScorecardHole, error) {
+	var it model.UpdateScorecardHole
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"nr", "strokes"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "nr":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nr"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Nr = data
+		case "strokes":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("strokes"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Strokes = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -3091,6 +3250,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "createPlayer":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createPlayer(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateScorecard":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateScorecard(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -3925,6 +4091,10 @@ func (ec *executionContext) marshalNPlayer2ᚖgithubᚗcomᚋoleorhagenᚋgolf�
 	return ec._Player(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNScorecard2githubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecard(ctx context.Context, sel ast.SelectionSet, v model.Scorecard) graphql.Marshaler {
+	return ec._Scorecard(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNScorecard2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐScorecardᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Scorecard) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -4168,6 +4338,31 @@ func (ec *executionContext) marshalNTournament2ᚖgithubᚗcomᚋoleorhagenᚋgo
 		return graphql.Null
 	}
 	return ec._Tournament(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpdateScorecard2githubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐUpdateScorecard(ctx context.Context, v any) (model.UpdateScorecard, error) {
+	res, err := ec.unmarshalInputUpdateScorecard(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateScorecardHole2ᚕᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐUpdateScorecardHoleᚄ(ctx context.Context, v any) ([]*model.UpdateScorecardHole, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.UpdateScorecardHole, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNUpdateScorecardHole2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐUpdateScorecardHole(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNUpdateScorecardHole2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐUpdateScorecardHole(ctx context.Context, v any) (*model.UpdateScorecardHole, error) {
+	res, err := ec.unmarshalInputUpdateScorecardHole(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOCourseCondition2ᚖgithubᚗcomᚋoleorhagenᚋgolfᚑgraphqlᚋgraphᚋmodelᚐCourseCondition(ctx context.Context, v any) (*model.CourseCondition, error) {
