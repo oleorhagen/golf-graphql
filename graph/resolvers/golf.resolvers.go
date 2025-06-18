@@ -749,6 +749,7 @@ func (r *scorecardCourseResolver) Holes(ctx context.Context, obj *model.Scorecar
       AND ch.player_id = hs.scorer_id
 		)
 		WHERE ch.course_name = $2
+                  AND ch.id = $1
 		ORDER BY ch.hole_nr
 `, obj.ScorecardID, obj.Name)
 
