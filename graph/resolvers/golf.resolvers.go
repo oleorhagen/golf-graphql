@@ -737,7 +737,7 @@ func (r *scorecardCourseResolver) Holes(ctx context.Context, obj *model.Scorecar
 	var holes []*model.ScorecardHole
 
 	rows, err := r.DB.Query(ctx, `
-        SELECT
+	SELECT
 			ch.hole_nr,
 			ch.hole_index,
 			ch.par,
@@ -751,7 +751,7 @@ func (r *scorecardCourseResolver) Holes(ctx context.Context, obj *model.Scorecar
       AND ch.player_id = hs.scorer_id
 		)
 		WHERE ch.course_name = $2
-                  AND ch.id = $1
+		  AND ch.id = $1
 		ORDER BY ch.hole_nr
 `, obj.ScorecardID, obj.Name)
 
