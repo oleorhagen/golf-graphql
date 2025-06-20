@@ -63,14 +63,16 @@ func (r *mutationResolver) UpdateScorecard(ctx context.Context, input model.Upda
 	// For now, this will store in extra_strokes column temporarily
 	for _, hole := range input.Holes {
 		_, err = tx.Exec(ctx, `
-insert into physical.hole_score (course_name, scorer_id, hole_nr, scorecard_id, strokes)
-values (
-    (select course_name from scorecard where id = $1),
-    (select scorer_id from scorecard where id = $1),
+INSERT INTO physical.hole_score (course_name, scorer_id, hole_nr, scorecard_id, strokes)
+VALUES (
+    (SELECT course_name FROM scorecard WHERE id = $1),
+    (SELECT scorer_id FROM scorecard WHERE id = $1),
     $2, -- Hole Nr
-    $1,
-    $3 -- 3 Strokes
-)`, input.ID, hole.Nr, hole.Strokes)
+    $1, -- Scorecard ID
+    $3  -- Strokes
+)
+ON CONFLICT (course_name, scorer_id, hole_nr, scorecard_id)
+DO UPDATE SET strokes = EXCLUDED.strokes`, input.ID, hole.Nr, hole.Strokes)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update strokes for hole %d: %w", hole.Nr, err)
 		}
