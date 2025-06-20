@@ -742,7 +742,7 @@ func (r *scorecardCourseResolver) Holes(ctx context.Context, obj *model.Scorecar
 			ch.hole_index,
 			ch.par,
 			ch.extra_strokes,
-			COALESCE(hs.strokes, 0) as strokes,
+			hs.strokes,
 			hs.points
 		FROM course_hole ch
 		LEFT JOIN hole_score hs ON (
@@ -760,8 +760,8 @@ func (r *scorecardCourseResolver) Holes(ctx context.Context, obj *model.Scorecar
 		return nil, fmt.Errorf("Failed to query holes for scorecard course (%s): %w", obj.Name, err)
 	}
 
-	var holeNr, index, par, extra_strokes, strokes int32
-	var points *int32
+	var holeNr, index, par, extra_strokes int32
+	var strokes, points *int32
 	_, err = pgx.ForEachRow(rows, []any{&holeNr, &index, &par, &extra_strokes, &strokes, &points}, func() error {
 		holes = append(holes, &model.ScorecardHole{
 			Nr:           holeNr,

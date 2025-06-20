@@ -70,8 +70,8 @@ type ScorecardHole struct {
 	Nr           int32  `json:"nr"`
 	Index        int32  `json:"index"`
 	Par          int32  `json:"par"`
-	Strokes      int32  `json:"strokes"`
 	ExtraStrokes int32  `json:"extra_strokes"`
+	Strokes      *int32 `json:"strokes,omitempty"`
 	Points       *int32 `json:"points,omitempty"`
 }
 
