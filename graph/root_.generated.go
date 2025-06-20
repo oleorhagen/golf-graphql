@@ -103,6 +103,7 @@ type ComplexityRoot struct {
 		Index        func(childComplexity int) int
 		Nr           func(childComplexity int) int
 		Par          func(childComplexity int) int
+		Points       func(childComplexity int) int
 		Strokes      func(childComplexity int) int
 	}
 
@@ -410,6 +411,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.ScorecardHole.Par(childComplexity), true
+
+	case "ScorecardHole.points":
+		if e.complexity.ScorecardHole.Points == nil {
+			break
+		}
+
+		return e.complexity.ScorecardHole.Points(childComplexity), true
 
 	case "ScorecardHole.strokes":
 		if e.complexity.ScorecardHole.Strokes == nil {

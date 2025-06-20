@@ -2150,6 +2150,8 @@ func (ec *executionContext) fieldContext_ScorecardCourse_holes(_ context.Context
 				return ec.fieldContext_ScorecardHole_strokes(ctx, field)
 			case "extra_strokes":
 				return ec.fieldContext_ScorecardHole_extra_strokes(ctx, field)
+			case "points":
+				return ec.fieldContext_ScorecardHole_points(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ScorecardHole", field.Name)
 		},
@@ -2365,6 +2367,47 @@ func (ec *executionContext) _ScorecardHole_extra_strokes(ctx context.Context, fi
 }
 
 func (ec *executionContext) fieldContext_ScorecardHole_extra_strokes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ScorecardHole",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ScorecardHole_points(ctx context.Context, field graphql.CollectedField, obj *model.ScorecardHole) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ScorecardHole_points(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Points, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ScorecardHole_points(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "ScorecardHole",
 		Field:      field,
@@ -3773,6 +3816,8 @@ func (ec *executionContext) _ScorecardHole(ctx context.Context, sel ast.Selectio
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "points":
+			out.Values[i] = ec._ScorecardHole_points(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

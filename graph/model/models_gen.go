@@ -67,11 +67,12 @@ type ScorecardCondition struct {
 }
 
 type ScorecardHole struct {
-	Nr           int32 `json:"nr"`
-	Index        int32 `json:"index"`
-	Par          int32 `json:"par"`
-	Strokes      int32 `json:"strokes"`
-	ExtraStrokes int32 `json:"extra_strokes"`
+	Nr           int32  `json:"nr"`
+	Index        int32  `json:"index"`
+	Par          int32  `json:"par"`
+	Strokes      int32  `json:"strokes"`
+	ExtraStrokes int32  `json:"extra_strokes"`
+	Points       *int32 `json:"points,omitempty"`
 }
 
 type Team struct {
