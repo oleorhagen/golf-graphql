@@ -51,6 +51,32 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 	return player, nil
 }
 
+// CreateScorecard is the resolver for the createScorecard field.
+func (r *mutationResolver) CreateScorecard(ctx context.Context, input model.NewScorecard) (*model.Scorecard, error) {
+	id := uuid.New()
+
+	_, err := r.DB.Exec(ctx, `
+		INSERT INTO scorecard (id, tournament_id, scorer_id, handicap, course_name)
+		VALUES ($1, $2, $3, $4, $5)`,
+		id, input.TournamentID, input.PlayerID, input.Handicap, input.CourseName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create scorecard: %w", err)
+	}
+
+	var tournamentID uuid.UUID
+	if input.TournamentID != nil {
+		tournamentID = *input.TournamentID
+	}
+
+	return &model.Scorecard{
+		ID:           id,
+		TournamentID: tournamentID,
+		Handicap:     input.Handicap,
+		CourseName:   input.CourseName,
+		PlayerID:     input.PlayerID,
+	}, nil
+}
+
 // UpdateScorecard is the resolver for the updateScorecard field.
 func (r *mutationResolver) UpdateScorecard(ctx context.Context, input model.UpdateScorecard) (*model.Scorecard, error) {
 	tx, err := r.DB.Begin(ctx)
@@ -62,14 +88,19 @@ func (r *mutationResolver) UpdateScorecard(ctx context.Context, input model.Upda
 	// Update hole strokes - need to add a strokes column to course_hole table first
 	// For now, this will store in extra_strokes column temporarily
 	for _, hole := range input.Holes {
+		// Get scorecard info first
+		var courseName string
+		var scorerID uuid.UUID
+		err = tx.QueryRow(ctx, "SELECT course_name, scorer_id FROM scorecard WHERE id = $1", input.ID).Scan(&courseName, &scorerID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get scorecard info: %w", err)
+		}
+
 		_, err = tx.Exec(ctx, `
 INSERT INTO physical.hole_score (course_name, scorer_id, hole_nr, scorecard_id, strokes)
-SELECT course_name, scorer_id, $2, $1, $3
-FROM scorecard
-WHERE id = $1;
-)
+VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT (course_name, scorer_id, hole_nr, scorecard_id)
-DO UPDATE SET strokes = EXCLUDED.strokes`, input.ID, hole.Nr, hole.Strokes)
+DO UPDATE SET strokes = EXCLUDED.strokes`, courseName, scorerID, hole.Nr, input.ID, hole.Strokes)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update strokes for hole %d: %w", hole.Nr, err)
 		}

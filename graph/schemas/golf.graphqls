@@ -196,6 +196,13 @@ input UpdateScorecardHole {
   strokes: Int!
 }
 
+input NewScorecard {
+  tournament_id: ID
+  player_id: ID!
+  course_name: String!
+  handicap: Int!
+}
+
 input UpdateScorecard {
   id: ID!
   holes: [UpdateScorecardHole!]!
@@ -203,5 +210,6 @@ input UpdateScorecard {
 
 type Mutation {
   createPlayer(input: NewPlayer!): Player!
+  createScorecard(input: NewScorecard!): Scorecard!
   updateScorecard(input: UpdateScorecard!): Scorecard!
 }
