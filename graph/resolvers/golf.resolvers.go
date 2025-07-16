@@ -64,12 +64,9 @@ func (r *mutationResolver) UpdateScorecard(ctx context.Context, input model.Upda
 	for _, hole := range input.Holes {
 		_, err = tx.Exec(ctx, `
 INSERT INTO physical.hole_score (course_name, scorer_id, hole_nr, scorecard_id, strokes)
-VALUES (
-    (SELECT course_name FROM scorecard WHERE id = $1),
-    (SELECT scorer_id FROM scorecard WHERE id = $1),
-    $2, -- Hole Nr
-    $1, -- Scorecard ID
-    $3  -- Strokes
+SELECT course_name, scorer_id, $2, $1, $3
+FROM scorecard
+WHERE id = $1;
 )
 ON CONFLICT (course_name, scorer_id, hole_nr, scorecard_id)
 DO UPDATE SET strokes = EXCLUDED.strokes`, input.ID, hole.Nr, hole.Strokes)
