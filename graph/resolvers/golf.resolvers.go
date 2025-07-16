@@ -63,14 +63,9 @@ func (r *mutationResolver) CreateScorecard(ctx context.Context, input model.NewS
 		return nil, fmt.Errorf("failed to create scorecard: %w", err)
 	}
 
-	var tournamentID uuid.UUID
-	if input.TournamentID != nil {
-		tournamentID = *input.TournamentID
-	}
-
 	return &model.Scorecard{
 		ID:           id,
-		TournamentID: tournamentID,
+		TournamentID: input.TournamentID,
 		Handicap:     input.Handicap,
 		CourseName:   input.CourseName,
 		PlayerID:     input.PlayerID,
@@ -113,7 +108,7 @@ DO UPDATE SET strokes = EXCLUDED.strokes`, courseName, scorerID, hole.Nr, input.
 
 	// Fetch and return the updated scorecard
 	var id uuid.UUID
-	var tournamentID uuid.UUID
+	var tournamentID *uuid.UUID
 	var playerID uuid.UUID
 	var handicap int32
 	var courseName string
@@ -659,7 +654,7 @@ func (r *queryResolver) Scorecards(ctx context.Context, limit *int32, offset *in
 
 	var scorecards []*model.Scorecard
 	var id uuid.UUID
-	var tournamentID uuid.UUID
+	var tournamentID *uuid.UUID
 	var playerID uuid.UUID
 	var handicap int32
 	var course_name string
@@ -813,7 +808,7 @@ func (r *scorecardCourseResolver) Holes(ctx context.Context, obj *model.Scorecar
 func (r *teamResolver) Scorecards(ctx context.Context, obj *model.Team) ([]*model.Scorecard, error) {
 	var scorecards []*model.Scorecard
 	var id uuid.UUID
-	var tournamentID uuid.UUID
+	var tournamentID *uuid.UUID
 	var playerID uuid.UUID
 	var handicap int32
 	var course_name string

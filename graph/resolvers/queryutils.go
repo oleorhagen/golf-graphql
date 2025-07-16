@@ -13,7 +13,7 @@ import (
 func getScorecards(r *playerResolver, ctx context.Context, scorerID uuid.UUID) ([]*model.Scorecard, error) {
 	var scorecards []*model.Scorecard
 	var id uuid.UUID
-	var tournamentID uuid.UUID
+	var tournamentID *uuid.UUID
 	var playerID uuid.UUID
 	var handicap int32
 	var course_name string

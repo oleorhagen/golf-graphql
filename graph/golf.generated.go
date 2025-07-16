@@ -1828,14 +1828,11 @@ func (ec *executionContext) _Scorecard_tournament_id(ctx context.Context, field 
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(uuid.UUID)
 	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+	return ec.marshalOID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Scorecard_tournament_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3730,9 +3727,6 @@ func (ec *executionContext) _Scorecard(ctx context.Context, sel ast.SelectionSet
 			}
 		case "tournament_id":
 			out.Values[i] = ec._Scorecard_tournament_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
 		case "handicap":
 			out.Values[i] = ec._Scorecard_handicap(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

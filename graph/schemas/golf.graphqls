@@ -15,7 +15,7 @@ type Team {
 
 type Scorecard {
   id: ID!
-  tournament_id: ID!
+  tournament_id: ID
   handicap: Int!
   course(condition: CourseCondition): ScorecardCourse!
   player: Player!
