@@ -140,6 +140,8 @@ enum ScorecardsOrderBy {
   HANDICAP_DESC
   ID_ASC
   ID_DESC
+  CREATED_AT_ASC
+  CREATED_AT_DESC
 }
 
 # Scorecard filtering input

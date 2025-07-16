@@ -630,6 +630,10 @@ func (r *queryResolver) Scorecards(ctx context.Context, limit *int32, offset *in
 			orderClause = "ORDER BY id ASC"
 		case model.ScorecardsOrderByIDDesc:
 			orderClause = "ORDER BY id DESC"
+		case model.ScorecardsOrderByCreatedAtAsc:
+			orderClause = "ORDER BY created_at ASC"
+		case model.ScorecardsOrderByCreatedAtDesc:
+			orderClause = "ORDER BY created_at DESC"
 		}
 	}
 

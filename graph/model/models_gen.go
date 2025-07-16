@@ -252,10 +252,12 @@ func (e PlayersOrderBy) MarshalJSON() ([]byte, error) {
 type ScorecardsOrderBy string
 
 const (
-	ScorecardsOrderByHandicapAsc  ScorecardsOrderBy = "HANDICAP_ASC"
-	ScorecardsOrderByHandicapDesc ScorecardsOrderBy = "HANDICAP_DESC"
-	ScorecardsOrderByIDAsc        ScorecardsOrderBy = "ID_ASC"
-	ScorecardsOrderByIDDesc       ScorecardsOrderBy = "ID_DESC"
+	ScorecardsOrderByHandicapAsc   ScorecardsOrderBy = "HANDICAP_ASC"
+	ScorecardsOrderByHandicapDesc  ScorecardsOrderBy = "HANDICAP_DESC"
+	ScorecardsOrderByIDAsc         ScorecardsOrderBy = "ID_ASC"
+	ScorecardsOrderByIDDesc        ScorecardsOrderBy = "ID_DESC"
+	ScorecardsOrderByCreatedAtAsc  ScorecardsOrderBy = "CREATED_AT_ASC"
+	ScorecardsOrderByCreatedAtDesc ScorecardsOrderBy = "CREATED_AT_DESC"
 )
 
 var AllScorecardsOrderBy = []ScorecardsOrderBy{
@@ -263,11 +265,13 @@ var AllScorecardsOrderBy = []ScorecardsOrderBy{
 	ScorecardsOrderByHandicapDesc,
 	ScorecardsOrderByIDAsc,
 	ScorecardsOrderByIDDesc,
+	ScorecardsOrderByCreatedAtAsc,
+	ScorecardsOrderByCreatedAtDesc,
 }
 
 func (e ScorecardsOrderBy) IsValid() bool {
 	switch e {
-	case ScorecardsOrderByHandicapAsc, ScorecardsOrderByHandicapDesc, ScorecardsOrderByIDAsc, ScorecardsOrderByIDDesc:
+	case ScorecardsOrderByHandicapAsc, ScorecardsOrderByHandicapDesc, ScorecardsOrderByIDAsc, ScorecardsOrderByIDDesc, ScorecardsOrderByCreatedAtAsc, ScorecardsOrderByCreatedAtDesc:
 		return true
 	}
 	return false
