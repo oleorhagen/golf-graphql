@@ -1,0 +1,26 @@
+stages:
+  - build
+  - test
+  - release
+  - deploy
+
+.build:site-build-template:
+  stage: build
+  image: docker
+  services:
+    - docker
+  before_script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build  --tag "$CI_REGISTRY_IMAGE/$CONTAINER_NAME:latest" .
+    - docker push "$CI_REGISTRY_IMAGE/$CONTAINER_NAME:latest"
+
+build:golfsite:
+  extends: .build:site-build-template
+  only:
+    changes:
+      - graph/*
+      - graph/**/*
+  variables:
+    CONTAINER_NAME: "golf-graphql"
