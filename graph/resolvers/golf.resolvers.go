@@ -495,6 +495,11 @@ func (r *queryResolver) Tournaments(ctx context.Context, limit *int32, offset *i
 	argIndex := 1
 
 	if condition != nil {
+		if condition.ID != nil {
+			whereClause += fmt.Sprintf(" AND id = $%d", argIndex)
+			args = append(args, *condition.ID)
+			argIndex++
+		}
 		if condition.Name != nil {
 			whereClause += fmt.Sprintf(" AND name ILIKE $%d", argIndex)
 			args = append(args, "%"+*condition.Name+"%")

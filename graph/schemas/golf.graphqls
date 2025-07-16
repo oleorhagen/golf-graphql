@@ -130,6 +130,7 @@ enum TournamentsOrderBy {
 
 # Tournament filtering input
 input TournamentCondition {
+  id: ID
   name: String
   year: Time
 }

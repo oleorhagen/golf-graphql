@@ -105,6 +105,7 @@ type Tournament struct {
 }
 
 type TournamentCondition struct {
+	ID   *uuid.UUID `json:"id,omitempty"`
 	Name *string    `json:"name,omitempty"`
 	Year *time.Time `json:"year,omitempty"`
 }
