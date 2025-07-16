@@ -46,6 +46,7 @@ type NewScorecard struct {
 	PlayerID     uuid.UUID  `json:"player_id"`
 	CourseName   string     `json:"course_name"`
 	Handicap     int32      `json:"handicap"`
+	CreatedAt    *time.Time `json:"created_at,omitempty"`
 }
 
 type Player struct {

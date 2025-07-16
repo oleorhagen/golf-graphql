@@ -55,10 +55,24 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 func (r *mutationResolver) CreateScorecard(ctx context.Context, input model.NewScorecard) (*model.Scorecard, error) {
 	id := uuid.New()
 
-	_, err := r.DB.Exec(ctx, `
-		INSERT INTO scorecard (id, tournament_id, scorer_id, handicap, course_name)
-		VALUES ($1, $2, $3, $4, $5)`,
-		id, input.TournamentID, input.PlayerID, input.Handicap, input.CourseName)
+	var createdAt time.Time
+	var err error
+
+	if input.CreatedAt != nil {
+		// If created_at is provided, use it
+		err = r.DB.QueryRow(ctx, `
+			INSERT INTO scorecard (id, tournament_id, scorer_id, handicap, course_name, created_at)
+			VALUES ($1, $2, $3, $4, $5, $6)
+			RETURNING created_at`,
+			id, input.TournamentID, input.PlayerID, input.Handicap, input.CourseName, input.CreatedAt).Scan(&createdAt)
+	} else {
+		// If created_at is not provided, let database set default
+		err = r.DB.QueryRow(ctx, `
+			INSERT INTO scorecard (id, tournament_id, scorer_id, handicap, course_name)
+			VALUES ($1, $2, $3, $4, $5)
+			RETURNING created_at`,
+			id, input.TournamentID, input.PlayerID, input.Handicap, input.CourseName).Scan(&createdAt)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to create scorecard: %w", err)
 	}
@@ -67,6 +81,7 @@ func (r *mutationResolver) CreateScorecard(ctx context.Context, input model.NewS
 		ID:           id,
 		TournamentID: input.TournamentID,
 		Handicap:     input.Handicap,
+		CreatedAt:    createdAt,
 		CourseName:   input.CourseName,
 		PlayerID:     input.PlayerID,
 	}, nil
@@ -112,10 +127,11 @@ DO UPDATE SET strokes = EXCLUDED.strokes`, courseName, scorerID, hole.Nr, input.
 	var playerID uuid.UUID
 	var handicap int32
 	var courseName string
+	var createdAt time.Time
 
 	err = r.DB.QueryRow(ctx,
-		"SELECT id, tournament_id, scorer_id, handicap, course_name FROM scorecard WHERE id = $1",
-		input.ID).Scan(&id, &tournamentID, &playerID, &handicap, &courseName)
+		"SELECT id, tournament_id, scorer_id, handicap, course_name, created_at FROM scorecard WHERE id = $1",
+		input.ID).Scan(&id, &tournamentID, &playerID, &handicap, &courseName, &createdAt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch updated scorecard: %w", err)
 	}
@@ -124,6 +140,7 @@ DO UPDATE SET strokes = EXCLUDED.strokes`, courseName, scorerID, hole.Nr, input.
 		ID:           id,
 		TournamentID: tournamentID,
 		Handicap:     handicap,
+		CreatedAt:    createdAt,
 		CourseName:   courseName,
 		PlayerID:     playerID,
 	}, nil
@@ -639,7 +656,7 @@ func (r *queryResolver) Scorecards(ctx context.Context, limit *int32, offset *in
 
 	// Build final query
 	query := fmt.Sprintf(`
-		SELECT id, tournament_id, scorer_id, handicap, course_name
+		SELECT id, tournament_id, scorer_id, handicap, course_name, created_at
 		FROM scorecard %s %s
 		LIMIT $%d OFFSET $%d`,
 		whereClause, orderClause, argIndex, argIndex+1)
@@ -658,12 +675,14 @@ func (r *queryResolver) Scorecards(ctx context.Context, limit *int32, offset *in
 	var playerID uuid.UUID
 	var handicap int32
 	var course_name string
+	var createdAt time.Time
 
-	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name}, func() error {
+	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name, &createdAt}, func() error {
 		scorecards = append(scorecards, &model.Scorecard{
 			ID:           id,
 			TournamentID: tournamentID,
 			Handicap:     handicap,
+			CreatedAt:    createdAt,
 			CourseName:   course_name,
 			PlayerID:     playerID,
 		})
@@ -812,16 +831,18 @@ func (r *teamResolver) Scorecards(ctx context.Context, obj *model.Team) ([]*mode
 	var playerID uuid.UUID
 	var handicap int32
 	var course_name string
+	var createdAt time.Time
 	rows, err := r.DB.Query(ctx,
-		"select id, tournament_id, scorer_id, handicap, course_name from scorecard where scorer_id=$1",
+		"select id, tournament_id, scorer_id, handicap, course_name, created_at from scorecard where scorer_id=$1",
 		obj.ID,
 	)
-	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name}, func() error {
+	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name, &createdAt}, func() error {
 		fmt.Fprintf(os.Stderr, "Got: %v\n", id)
 		scorecards = append(scorecards, &model.Scorecard{
 			ID:           id,
 			TournamentID: tournamentID,
 			Handicap:     handicap,
+			CreatedAt:    createdAt,
 			CourseName:   course_name,
 			PlayerID:     playerID,
 		})

@@ -85,6 +85,7 @@ type ComplexityRoot struct {
 
 	Scorecard struct {
 		Course       func(childComplexity int, condition *model.CourseCondition) int
+		CreatedAt    func(childComplexity int) int
 		Handicap     func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Player       func(childComplexity int) int
@@ -333,6 +334,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Scorecard.Course(childComplexity, args["condition"].(*model.CourseCondition)), true
+
+	case "Scorecard.created_at":
+		if e.complexity.Scorecard.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Scorecard.CreatedAt(childComplexity), true
 
 	case "Scorecard.handicap":
 		if e.complexity.Scorecard.Handicap == nil {

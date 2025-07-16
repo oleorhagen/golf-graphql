@@ -17,6 +17,7 @@ type Scorecard {
   id: ID!
   tournament_id: ID
   handicap: Int!
+  created_at: Time!
   course(condition: CourseCondition): ScorecardCourse!
   player: Player!
 }
@@ -201,6 +202,7 @@ input NewScorecard {
   player_id: ID!
   course_name: String!
   handicap: Int!
+  created_at: Time
 }
 
 input UpdateScorecard {

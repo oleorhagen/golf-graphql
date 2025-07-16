@@ -1029,6 +1029,8 @@ func (ec *executionContext) fieldContext_Mutation_createScorecard(ctx context.Co
 				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
 			case "handicap":
 				return ec.fieldContext_Scorecard_handicap(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Scorecard_created_at(ctx, field)
 			case "course":
 				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
@@ -1096,6 +1098,8 @@ func (ec *executionContext) fieldContext_Mutation_updateScorecard(ctx context.Co
 				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
 			case "handicap":
 				return ec.fieldContext_Scorecard_handicap(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Scorecard_created_at(ctx, field)
 			case "course":
 				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
@@ -1292,6 +1296,8 @@ func (ec *executionContext) fieldContext_Player_scorecards(_ context.Context, fi
 				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
 			case "handicap":
 				return ec.fieldContext_Scorecard_handicap(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Scorecard_created_at(ctx, field)
 			case "course":
 				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
@@ -1610,6 +1616,8 @@ func (ec *executionContext) fieldContext_Query_scorecards(ctx context.Context, f
 				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
 			case "handicap":
 				return ec.fieldContext_Scorecard_handicap(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Scorecard_created_at(ctx, field)
 			case "course":
 				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
@@ -1830,9 +1838,9 @@ func (ec *executionContext) _Scorecard_tournament_id(ctx context.Context, field 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(uuid.UUID)
+	res := resTmp.(*uuid.UUID)
 	fc.Result = res
-	return ec.marshalOID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+	return ec.marshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Scorecard_tournament_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1887,6 +1895,50 @@ func (ec *executionContext) fieldContext_Scorecard_handicap(_ context.Context, f
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Scorecard_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Scorecard) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Scorecard_created_at(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Scorecard_created_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Scorecard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2679,6 +2731,8 @@ func (ec *executionContext) fieldContext_Team_scorecards(_ context.Context, fiel
 				return ec.fieldContext_Scorecard_tournament_id(ctx, field)
 			case "handicap":
 				return ec.fieldContext_Scorecard_handicap(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Scorecard_created_at(ctx, field)
 			case "course":
 				return ec.fieldContext_Scorecard_course(ctx, field)
 			case "player":
@@ -2966,7 +3020,7 @@ func (ec *executionContext) unmarshalInputNewScorecard(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"tournament_id", "player_id", "course_name", "handicap"}
+	fieldsInOrder := [...]string{"tournament_id", "player_id", "course_name", "handicap", "created_at"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3001,6 +3055,13 @@ func (ec *executionContext) unmarshalInputNewScorecard(ctx context.Context, obj 
 				return it, err
 			}
 			it.Handicap = data
+		case "created_at":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("created_at"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
 		}
 	}
 
@@ -3729,6 +3790,11 @@ func (ec *executionContext) _Scorecard(ctx context.Context, sel ast.SelectionSet
 			out.Values[i] = ec._Scorecard_tournament_id(ctx, field, obj)
 		case "handicap":
 			out.Values[i] = ec._Scorecard_handicap(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "created_at":
+			out.Values[i] = ec._Scorecard_created_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

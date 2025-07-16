@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 	pgx "github.com/jackc/pgx/v5"
@@ -17,17 +18,19 @@ func getScorecards(r *playerResolver, ctx context.Context, scorerID uuid.UUID) (
 	var playerID uuid.UUID
 	var handicap int32
 	var course_name string
+	var createdAt time.Time
 	fmt.Fprintf(os.Stderr, "Querying scorecard with playerID=%s\n", scorerID)
 	rows, err := r.DB.Query(ctx,
-		"select id, tournament_id, scorer_id, handicap, course_name from scorecard where scorer_id=$1",
+		"select id, tournament_id, scorer_id, handicap, course_name, created_at from scorecard where scorer_id=$1",
 		scorerID,
 	)
-	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name}, func() error {
+	_, err = pgx.ForEachRow(rows, []any{&id, &tournamentID, &playerID, &handicap, &course_name, &createdAt}, func() error {
 		fmt.Fprintf(os.Stderr, "Got: %v\n", id)
 		scorecards = append(scorecards, &model.Scorecard{
 			ID:           id,
 			TournamentID: tournamentID,
 			Handicap:     handicap,
+			CreatedAt:    createdAt,
 			CourseName:   course_name,
 			PlayerID:     playerID,
 		})
