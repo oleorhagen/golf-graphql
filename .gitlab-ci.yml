@@ -22,5 +22,6 @@ build:golfsite:
     changes:
       - graph/*
       - graph/**/*
+      - server.go
   variables:
     CONTAINER_NAME: "golf-graphql"
